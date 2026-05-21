@@ -212,7 +212,18 @@ function jumpToRow(row) {
   }
 }
 
-// Implements roving tab-index: sets tabindex="0" on the target and "-1" on all others.
+// Returns true when a button may receive focus under the current navigation
+// rules. A button is navigable when it exists and is not dimmed by an active
+// filter or search. Series-btn cells (Lanthanide / Actinide jump buttons) are
+// never dimmed by applyFilters, so they remain navigable whenever visible.
+function isNavigable(btn) {
+  return btn && !btn.classList.contains('dimmed');
+}
+
+// Implements roving tab-index: sets tabindex="0" on the target and "-1" on
+// all others. The navigable set is every grid button that passes isNavigable.
+// When a filter is active, dimmed buttons receive tabindex="-1", ensuring
+// exactly one navigable button holds tabindex="0".
 function setRovingTabindex(target) {
   document.querySelectorAll('#pt-grid .el-btn, #pt-grid .series-btn').forEach(function (b) {
     b.setAttribute('tabindex', b === target ? '0' : '-1');
@@ -220,6 +231,9 @@ function setRovingTabindex(target) {
 }
 
 // Handles arrow-key, Home, and End navigation within the grid.
+// Arrow navigation skips dimmed cells by delegating to findNearest, which
+// honours isNavigable. For ArrowUp/ArrowDown, if the target row contains no
+// navigable cell the move is silently cancelled (focus stays put).
 function handleGridKeydown(e) {
   const btn = e.currentTarget;
   const row = parseInt(btn.dataset.row || btn.getAttribute('aria-rowindex'), 10);
@@ -252,27 +266,46 @@ function handleGridKeydown(e) {
   }
 }
 
-// Finds the nearest occupied cell in the given row, starting from the given column.
+// Finds the nearest navigable (non-dimmed, occupied) cell in the given row,
+// starting from the given column. Direction controls the search order:
+//   ArrowRight: scan right from col.
+//   ArrowLeft:  scan left from col.
+//   Home:       scan right from col 1 (find the leftmost navigable cell).
+//   End:        scan left from col 18 (find the rightmost navigable cell).
+//   ArrowUp / ArrowDown / other: scan outward from col in both directions.
+// Dimmed cells are skipped in every search path.
 function findNearest(row, col, dir) {
   const b = btnGrid[row] && btnGrid[row][col];
-  if (b) { return b; }
+  if (isNavigable(b)) { return b; }
 
-  if (dir === 'ArrowRight' || dir === 'End') {
+  if (dir === 'ArrowRight') {
     for (let c = col; c <= 18; c++) {
       const x = btnGrid[row] && btnGrid[row][c];
-      if (x) { return x; }
+      if (isNavigable(x)) { return x; }
     }
-  } else if (dir === 'ArrowLeft' || dir === 'Home') {
+  } else if (dir === 'ArrowLeft') {
     for (let c = col; c >= 1; c--) {
       const x = btnGrid[row] && btnGrid[row][c];
-      if (x) { return x; }
+      if (isNavigable(x)) { return x; }
+    }
+  } else if (dir === 'Home') {
+    // Scan right from col 1 to find the leftmost navigable cell in the row.
+    for (let c = 1; c <= 18; c++) {
+      const x = btnGrid[row] && btnGrid[row][c];
+      if (isNavigable(x)) { return x; }
+    }
+  } else if (dir === 'End') {
+    // Scan left from col 18 to find the rightmost navigable cell in the row.
+    for (let c = 18; c >= 1; c--) {
+      const x = btnGrid[row] && btnGrid[row][c];
+      if (isNavigable(x)) { return x; }
     }
   } else {
     for (let o = 0; o <= 18; o++) {
       const x1 = btnGrid[row] && btnGrid[row][col + o];
-      if (x1) { return x1; }
+      if (isNavigable(x1)) { return x1; }
       const x2 = btnGrid[row] && btnGrid[row][col - o];
-      if (x2) { return x2; }
+      if (isNavigable(x2)) { return x2; }
     }
   }
 
@@ -472,6 +505,10 @@ document.querySelectorAll('.filter-btn').forEach(function (btn) {
 });
 
 // Applies the active search term and category filter to the grid.
+// After updating the dimmed classes, checks whether the element that currently
+// holds tabindex="0" (the roving focus owner) has become dimmed. If it has,
+// the roving tab-index and focus move to the nearest navigable element so that
+// the keyboard user is never left on a filtered-out cell.
 function applyFilters() {
   const q = searchInput.value.trim().toLowerCase();
   let count = 0;
@@ -497,6 +534,38 @@ function applyFilters() {
 
   if (q) {
     announce(`${count} element${count !== 1 ? 's' : ''} match "${searchInput.value}".`);
+  }
+
+  // Edge case: if the current roving-tabindex owner has become dimmed by the
+  // filter, move the roving tab-index (and focus when the grid is active) to
+  // the nearest navigable element. This keeps exactly one navigable element at
+  // tabindex="0" and prevents a keyboard user from being stranded on a dimmed
+  // cell after applying a filter while the grid is focused.
+  const currentOwner = document.querySelector('#pt-grid .el-btn[tabindex="0"], #pt-grid .series-btn[tabindex="0"]');
+  if (currentOwner && currentOwner.classList.contains('dimmed')) {
+    const row = parseInt(currentOwner.dataset.row || currentOwner.getAttribute('aria-rowindex'), 10);
+    const col = parseInt(currentOwner.dataset.col || currentOwner.getAttribute('aria-colindex'), 10);
+    // Search outward from the dimmed cell's position to find the nearest
+    // navigable cell. Try the same row first; findNearest with no direction
+    // searches outward in both column directions.
+    let nearest = findNearest(row, col, 'other');
+    if (!nearest) {
+      // If no navigable cell exists in that row, scan all rows for any
+      // navigable cell and use the first one found.
+      for (let ri = 0; ri < validRows.length; ri++) {
+        nearest = findNearest(validRows[ri], col, 'other');
+        if (nearest) { break; }
+      }
+    }
+    if (nearest) {
+      setRovingTabindex(nearest);
+      // Move real focus only when a grid cell currently has focus, so that
+      // applying a filter from the filter-button toolbar does not unexpectedly
+      // steal focus away from the toolbar.
+      if (document.activeElement === currentOwner) {
+        nearest.focus();
+      }
+    }
   }
 }
 
