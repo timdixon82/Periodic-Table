@@ -94,7 +94,9 @@
   --noble: #85e8f7;       /* was #22d3ee (5.1:1 fail); now 11.2:1 AAA pass */
   --lanthanide: #ffadd9;  /* was #f472b6 (4.6:1 fail); now 9.2:1 AAA pass */
   --actinide: #ffb97a;    /* was #f97316 (3.8:1 fail); now 9.4:1 AAA pass */
-  --unknown: #94a3b8;
+  /* --unknown updated from #94a3b8 (~6.2:1 fail) to #c2cce0 (~9.8:1 AAA pass)
+     against --card (#1a2235). Carol re-test N3 (WCAG 1.4.6). 2026-05-21. */
+  --unknown: #c2cce0;
 }
 
 *,
@@ -543,10 +545,12 @@ header p {
   max-width: 65ch;
 }
 
+/* opacity: .6 removed. It reduced effective contrast of --muted below 7:1
+   against --card (#1a2235). Explicit colour #a8b8d0 gives ~7.9:1 AAA.
+   Carol re-test N2 (WCAG 1.4.6). 2026-05-21. */
 .info-placeholder {
-  color: var(--muted);
+  color: #a8b8d0;
   font-size: .9rem;
-  opacity: .6;
 }
 
 /* Legend section heading. Visible h2 added per Simon section 5.1. */

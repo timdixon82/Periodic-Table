@@ -86,6 +86,10 @@ function catVar(cat) {
 }
 
 // Builds the periodic table grid and attaches all event listeners.
+// ARIA grid pattern requires grid > row > gridcell. Each data row's cells are
+// wrapped in a div with role="row" and aria-rowindex. The gap-spacer div with
+// role="presentation" is a direct child of the grid, between row wrappers.
+// Carol re-test N1 (WCAG 4.1.2). 2026-05-21.
 function buildGrid() {
   const allRows = [1, 2, 3, 4, 5, 6, 7, 'gap', 9, 10];
   let firstBtn = null;
@@ -99,6 +103,11 @@ function buildGrid() {
       return;
     }
 
+    // Create a row wrapper. aria-rowindex sits on the row, not on individual cells.
+    const rowWrapper = document.createElement('div');
+    rowWrapper.setAttribute('role', 'row');
+    rowWrapper.setAttribute('aria-rowindex', rowNum);
+
     for (let col = 1; col <= 18; col++) {
       const el = ELEMENTS.find(function (e) { return e.row === rowNum && e.col === col; });
 
@@ -111,12 +120,6 @@ function buildGrid() {
         btn.dataset.col = col;
         btn.dataset.cat = el.cat;
         btn.setAttribute('role', 'gridcell');
-        // aria-rowindex corrected: rows 1-7 use their actual row number (1-7);
-        // row 9 (lanthanides) maps to aria-rowindex 9; row 10 (actinides) maps
-        // to aria-rowindex 10. The previous formula (rowNum <= 7 ? rowNum :
-        // rowNum - 1) produced 8 for row 9 and 9 for row 10, which was
-        // inconsistent with aria-rowcount="10". Simon section 11.
-        btn.setAttribute('aria-rowindex', rowNum);
         btn.setAttribute('aria-colindex', col);
         btn.setAttribute('aria-selected', 'false');
         btn.setAttribute('tabindex', (!firstBtn) ? '0' : '-1');
@@ -154,7 +157,7 @@ function buildGrid() {
 
         btn.addEventListener('click', function () { selectElement(el.n); });
         btn.addEventListener('keydown', handleGridKeydown);
-        grid.appendChild(btn);
+        rowWrapper.appendChild(btn);
 
         if (!btnGrid[rowNum]) { btnGrid[rowNum] = {}; }
         btnGrid[rowNum][col] = btn;
@@ -165,7 +168,6 @@ function buildGrid() {
         ph.type = 'button';
         ph.className = 'series-btn';
         ph.setAttribute('role', 'gridcell');
-        ph.setAttribute('aria-rowindex', rowNum);
         ph.setAttribute('aria-colindex', col);
         ph.setAttribute('tabindex', '-1');
 
@@ -180,7 +182,7 @@ function buildGrid() {
         }
 
         ph.addEventListener('keydown', handleGridKeydown);
-        grid.appendChild(ph);
+        rowWrapper.appendChild(ph);
 
         if (!btnGrid[rowNum]) { btnGrid[rowNum] = {}; }
         btnGrid[rowNum][col] = ph;
@@ -190,9 +192,11 @@ function buildGrid() {
         empty.setAttribute('role', 'none');
         // Inline style removed: transparent background and no border are the
         // default for a div, so no style attribute is needed here.
-        grid.appendChild(empty);
+        rowWrapper.appendChild(empty);
       }
     }
+
+    grid.appendChild(rowWrapper);
   });
 }
 
