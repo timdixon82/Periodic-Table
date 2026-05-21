@@ -25,7 +25,12 @@ jobs:
           node-version: lts/*
 
       - name: Install accessibility tools
-        run: npm install -g pa11y @axe-core/cli wait-on
+        run: npm install -g pa11y @axe-core/cli wait-on browser-driver-manager
+
+      - name: Install matching Chrome and ChromeDriver versions
+        # @axe-core/cli requires ChromeDriver that matches the installed Chrome.
+        # browser-driver-manager installs a matching pair.
+        run: npx browser-driver-manager install chrome
 
       - name: Serve the site
         run: python3 -m http.server 8080 &
