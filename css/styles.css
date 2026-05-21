@@ -246,7 +246,6 @@ header p {
 }
 
 .filter-btn:focus-visible {
-
   /* Standardised two-colour focus ring: 3px white outer, black inner shadow.
      White on card background: 21:1. Replaces variable-colour outline. Simon section 7. */
   outline: 3px solid #fff;
@@ -335,7 +334,6 @@ header p {
 }
 
 .el-btn:focus-visible {
-
   /* Standardised two-colour focus ring: 3px white outer, black inner shadow.
      White on card background: 21:1. Replaces variable-colour outline. Simon section 7. */
   outline: 3px solid #fff;
@@ -400,7 +398,6 @@ header p {
 }
 
 .series-btn:focus-visible {
-
   /* Standardised two-colour focus ring: 3px white outer, black inner shadow.
      Simon section 7. */
   outline: 3px solid #fff;
