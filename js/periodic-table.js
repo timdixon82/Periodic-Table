@@ -37,6 +37,23 @@ const CAT_LABEL = {
   'unknown': 'Unknown',
 };
 
+// Maps element category keys to two-letter abbreviations for the non-colour
+// category identifier system. Abbreviations are shown in legend dots and as
+// tiny cell badges. WCAG 1.4.1. Simon sections 4.2 and 4.3.
+const CAT_ABBR = {
+  'alkali-metal': 'AK',
+  'alkaline-earth': 'AE',
+  'transition-metal': 'TM',
+  'post-transition': 'PT',
+  'metalloid': 'ML',
+  'nonmetal': 'NM',
+  'halogen': 'HG',
+  'noble-gas': 'NG',
+  'lanthanide': 'LA',
+  'actinide': 'AC',
+  'unknown': '?',
+};
+
 // Build a lookup map from atomic number to element object for fast access.
 const elMap = {};
 ELEMENTS.forEach(function (e) {
@@ -49,6 +66,19 @@ const srLive = document.getElementById('sr-live');
 const searchInput = document.getElementById('search');
 const btnGrid = {};
 const validRows = [1, 2, 3, 4, 5, 6, 7, 9, 10];
+
+// Skip-link focus redirect for #pt-grid.
+// #pt-grid has tabindex="-1" so the "Skip to periodic table" skip link can
+// deliver focus to the grid wrapper. When focus arrives on the grid wrapper
+// itself, we redirect it to the first focusable roving-tabindex cell, so the
+// user lands on an interactive cell rather than the non-interactive wrapper.
+// Simon section 13.
+grid.addEventListener('focus', function () {
+  const firstFocusable = document.querySelector('#pt-grid .el-btn[tabindex="0"], #pt-grid .series-btn[tabindex="0"]');
+  if (firstFocusable) {
+    firstFocusable.focus();
+  }
+});
 
 // Returns the CSS custom property name for a given category key.
 function catVar(cat) {
@@ -81,10 +111,21 @@ function buildGrid() {
         btn.dataset.col = col;
         btn.dataset.cat = el.cat;
         btn.setAttribute('role', 'gridcell');
-        btn.setAttribute('aria-rowindex', rowNum <= 7 ? rowNum : rowNum - 1);
+        // aria-rowindex corrected: rows 1-7 use their actual row number (1-7);
+        // row 9 (lanthanides) maps to aria-rowindex 9; row 10 (actinides) maps
+        // to aria-rowindex 10. The previous formula (rowNum <= 7 ? rowNum :
+        // rowNum - 1) produced 8 for row 9 and 9 for row 10, which was
+        // inconsistent with aria-rowcount="10". Simon section 11.
+        btn.setAttribute('aria-rowindex', rowNum);
         btn.setAttribute('aria-colindex', col);
         btn.setAttribute('aria-selected', 'false');
         btn.setAttribute('tabindex', (!firstBtn) ? '0' : '-1');
+
+        // data-cat-abbr provides the two-letter category abbreviation for the
+        // CSS ::after pseudo-element cell badge. aria-hidden in CSS via the
+        // pseudo-element itself; the aria-label already names the category.
+        // WCAG 1.4.1. Simon section 4.3.
+        btn.dataset.catAbbr = CAT_ABBR[el.cat] || '';
 
         const stStr = el.state !== 'Unknown' ? `, ${el.state} at room temperature` : '';
         btn.setAttribute('aria-label', `${el.name}, symbol ${el.sym}, atomic number ${el.n}, ${CAT_LABEL[el.cat]}${stStr}, atomic mass ${el.mass}`);
@@ -296,7 +337,10 @@ function renderInfo(el) {
   const content = document.createElement('div');
   content.className = 'info-content';
 
-  const nameDiv = document.createElement('div');
+  // info-name changed from div to h2. The page h1 is "Periodic Table of
+  // Elements"; the element name is the primary heading of the selected-element
+  // detail section, so h2 is the correct level. Simon section 6.
+  const nameDiv = document.createElement('h2');
   nameDiv.className = 'info-name';
   nameDiv.textContent = el.name;
 
@@ -346,19 +390,26 @@ function renderInfo(el) {
   infoPanel.appendChild(symbolBox);
   infoPanel.appendChild(content);
 
-  announce(`${el.name}, ${el.sym}, atomic number ${el.n}. ${el.desc.substring(0, 120)}.`);
+  // Full description announced; .substring(0, 120) removed. Element descriptions
+  // are a few sentences each. Announcing the full text serves WCAG 4.1.3.
+  // The live region is polite so it will not interrupt ongoing speech.
+  // Simon sections 12 and 17.
+  announce(`${el.name}, ${el.sym}, atomic number ${el.n}. ${el.desc}.`);
 }
 
-// Creates a stat box element with a label and value.
+// Creates a stat box element with a label and value as a description list.
+// The dl/dt/dd pattern provides a native semantic association between label
+// and value, which all screen readers understand. Previously used div/div
+// with no programmatic relationship. Simon section 6.
 function makeStatBox(label, value) {
-  const box = document.createElement('div');
+  const box = document.createElement('dl');
   box.className = 'stat-box';
 
-  const lbl = document.createElement('div');
+  const lbl = document.createElement('dt');
   lbl.className = 's-label';
   lbl.textContent = label;
 
-  const val = document.createElement('div');
+  const val = document.createElement('dd');
   val.className = 's-val';
   val.textContent = value;
 
