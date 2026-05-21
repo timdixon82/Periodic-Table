@@ -296,6 +296,14 @@ header p {
   min-width: 720px;
 }
 
+/* The ARIA grid pattern places role="row" wrappers between the grid and its
+   cells. display: contents removes the wrappers from the CSS layout box tree,
+   so the cells auto-place into the 18-column grid exactly as before, while the
+   wrappers stay in the accessibility tree. Resolves the N1 layout regression. */
+#pt-grid > div[role="row"] {
+  display: contents;
+}
+
 .el-btn {
   display: flex;
   flex-direction: column;
