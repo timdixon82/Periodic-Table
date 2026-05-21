@@ -1,0 +1,22 @@
+{
+  "name": "periodic-table",
+  "version": "0.1.0",
+  "description": "Interactive, accessible periodic table of the chemical elements.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint:html": "html-validate index.html",
+    "lint:css": "stylelint \"css/**/*.css\"",
+    "lint:js": "eslint \"js/**/*.js\"",
+    "lint": "npm run lint:html && npm run lint:css && npm run lint:js"
+  },
+  "devDependencies": {
+    "@fontsource/nunito-sans": "^5.2.5",
+    "@fontsource/rajdhani": "^5.2.5",
+    "@fontsource/share-tech-mono": "^5.2.5",
+    "eslint": "^9.26.0",
+    "html-validate": "^11.2.0",
+    "stylelint": "^16.19.1",
+    "stylelint-config-standard": "^38.0.0"
+  }
+}

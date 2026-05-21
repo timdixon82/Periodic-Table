@@ -1,0 +1,12 @@
+# CODEOWNERS
+#
+# Every path is owned by @timdixon82, who is the only human reviewer.
+# The comments record which agent is responsible for each area.
+
+* @timdixon82
+
+# index.html, css/, js/          - built by Sean, reviewed by Jed, tested by Carol.
+# assets/fonts/                   - managed by Sean per Decision Record 004.
+# docs/                           - the project wiki. Maintained by Sonja and the team.
+# .github/workflows/              - owned with Neil (release manager).
+# CLAUDE.md                       - the team's shared memory, maintained by Sonja.
