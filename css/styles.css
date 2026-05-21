@@ -72,12 +72,15 @@
   --card: #1a2235;
   --border: #2a3550;
   --text: #e2e8f0;
+
   /* --muted updated from #8a99b3 (3.3:1, fails AA) to #c8d3e8 (10.5:1, AAA pass).
      WCAG 1.4.3 AAA requires 7:1 for normal text. Simon section 3.3. */
   --muted: #c8d3e8;
+
   /* --accent updated from #38bdf8 to #7dd9ff.
      Black text on #7dd9ff achieves 13.2:1 (AAA). Simon section 3.5. */
   --accent: #7dd9ff;
+
   /* Category colours updated to meet 7:1 against --card (#1a2235).
      Precise contrast ratios verified against actual luminance (see section 3.2).
      All values achieve >= 9.2:1 against #1a2235. Simon section 3.2. */
@@ -115,6 +118,7 @@ body {
   position: absolute;
   top: -100%;
   left: 0;
+
   /* --accent (#7dd9ff) background; black (#000) text achieves 13.2:1 AAA. */
   background: var(--accent);
   color: #000;
@@ -127,11 +131,12 @@ body {
 
 .skip-link:focus {
   top: 0;
+
   /* Standardised two-colour focus ring: 3px white outer, black inner shadow.
      White on dark page background: 21:1. Simon section 7. */
-  outline: 3px solid #ffffff;
+  outline: 3px solid #fff;
   outline-offset: 3px;
-  box-shadow: 0 0 0 1px #000000 inset;
+  box-shadow: 0 0 0 1px #000 inset;
 }
 
 .sr-only {
@@ -193,6 +198,7 @@ header p {
   padding: 10px 14px;
   border-radius: 6px;
   width: 220px;
+
   /* min-height: 44px ensures the 44px AAA target size. Simon section 8. */
   min-height: 44px;
   outline: none;
@@ -201,10 +207,11 @@ header p {
 
 #search:focus {
   border-color: var(--accent);
+
   /* Standardised two-colour focus ring. Simon section 7. */
-  outline: 3px solid #ffffff;
+  outline: 3px solid #fff;
   outline-offset: 3px;
-  box-shadow: 0 0 0 1px #000000 inset;
+  box-shadow: 0 0 0 1px #000 inset;
 }
 
 #search::placeholder {
@@ -226,22 +233,25 @@ header p {
   font-size: .78rem;
   font-weight: 600;
   letter-spacing: .04em;
+
   /* text-transform: uppercase removed. Uppercase reduces legibility and causes
      some screen readers to spell out individual letters. Title case labels are
      used instead. Simon section 15. */
   background: var(--card);
   color: var(--muted);
+
   /* min-height: 44px ensures the 44px AAA target size. Simon section 8. */
   min-height: 44px;
   transition: all .2s;
 }
 
 .filter-btn:focus-visible {
+
   /* Standardised two-colour focus ring: 3px white outer, black inner shadow.
      White on card background: 21:1. Replaces variable-colour outline. Simon section 7. */
-  outline: 3px solid #ffffff;
+  outline: 3px solid #fff;
   outline-offset: 3px;
-  box-shadow: 0 0 0 1px #000000 inset;
+  box-shadow: 0 0 0 1px #000 inset;
 }
 
 .filter-btn[data-cat="alkali-metal"] { --fc: var(--alkali); }
@@ -276,6 +286,7 @@ header p {
 #pt-grid {
   display: grid;
   grid-template-columns: repeat(18, minmax(56px, 1fr));
+
   /* Changed from repeat(10, 56px) to minmax(56px, auto) so that cells expand
      rather than clip text when the user applies WCAG 1.4.12 text-spacing
      overrides. Simon section 16. */
@@ -316,6 +327,7 @@ header p {
 .el-btn:focus-visible {
   border-color: var(--el-color);
   background: color-mix(in srgb, var(--el-color) 10%, var(--card));
+
   /* transform: scale(1.06) removed. Scale displaces the cell and can cause
      the focus ring to overlap adjacent cells. Also suppressed by
      prefers-reduced-motion below. Simon sections 7 and 9. */
@@ -323,11 +335,12 @@ header p {
 }
 
 .el-btn:focus-visible {
+
   /* Standardised two-colour focus ring: 3px white outer, black inner shadow.
      White on card background: 21:1. Replaces variable-colour outline. Simon section 7. */
-  outline: 3px solid #ffffff;
+  outline: 3px solid #fff;
   outline-offset: 3px;
-  box-shadow: 0 0 0 1px #000000 inset;
+  box-shadow: 0 0 0 1px #000 inset;
 }
 
 .el-btn[aria-selected="true"] {
@@ -362,6 +375,7 @@ header p {
   text-align: center;
   line-height: 1.1;
   max-width: 100%;
+
   /* text-overflow: ellipsis and white-space: nowrap removed. When a user
      applies WCAG 1.4.12 text-spacing overrides, element names would be
      clipped and lost. The cell now wraps and expands (minmax row height).
@@ -386,11 +400,12 @@ header p {
 }
 
 .series-btn:focus-visible {
+
   /* Standardised two-colour focus ring: 3px white outer, black inner shadow.
      Simon section 7. */
-  outline: 3px solid #ffffff;
+  outline: 3px solid #fff;
   outline-offset: 3px;
-  box-shadow: 0 0 0 1px #000000 inset;
+  box-shadow: 0 0 0 1px #000 inset;
 }
 
 .gap-spacer {
@@ -505,6 +520,7 @@ header p {
   text-transform: uppercase;
   letter-spacing: .08em;
   margin-bottom: 2px;
+
   /* dt default margin removed to match existing visual layout. */
   margin-top: 0;
 }
@@ -514,6 +530,7 @@ header p {
   font-family: 'Share Tech Mono', monospace;
   font-size: .95rem;
   color: var(--text);
+
   /* dd default margin-left removed. */
   margin-left: 0;
   margin-bottom: 0;
@@ -523,6 +540,7 @@ header p {
   font-size: .88rem;
   color: var(--muted);
   line-height: 1.65;
+
   /* max-width: 65ch caps line length at approximately 65 characters,
      within the WCAG 1.4.8 80-character limit. Simon section 14. */
   max-width: 65ch;
@@ -547,6 +565,7 @@ header p {
 .legend {
   display: flex;
   flex-wrap: wrap;
+
   /* Gap increased from 10px to 12px to give the larger dots room. Simon section 5.2. */
   gap: 12px;
 }
@@ -555,6 +574,7 @@ header p {
   display: flex;
   align-items: center;
   gap: 6px;
+
   /* font-size increased from .75rem to .85rem for legibility. Simon section 5.2. */
   font-size: .85rem;
   color: var(--muted);
@@ -571,12 +591,13 @@ header p {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
   /* Abbreviation text: black (#000) on light category colours.
      Precise contrasts: 11.9:1 to 15.9:1 (all AAA). Although aria-hidden,
      high contrast makes the abbreviation legible for sighted users. */
   font-size: 9px;
   font-weight: 700;
-  color: #000000;
+  color: #000;
   line-height: 1;
   flex-shrink: 0;
 }
