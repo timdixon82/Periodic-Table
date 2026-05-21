@@ -24,4 +24,4 @@ The search-and-detail path means that all element information is accessible with
 
 ## Tim's approval
 
-Pending. Required before this branch is merged to main.
+Approved by Tim Dixon on 2026-05-21, relayed through Sonja, in answer to question Q1.

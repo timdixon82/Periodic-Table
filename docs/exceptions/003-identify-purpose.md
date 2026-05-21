@@ -26,4 +26,4 @@ The team's global `docs/accessibility.md` notes that 1.3.6 is treated as best-ef
 
 ## Tim's approval
 
-Pending. Required before this branch is merged to main.
+Approved by Tim Dixon on 2026-05-21, relayed through Sonja, in answer to question Q2.
