@@ -46,11 +46,13 @@
   <p>118 elements &middot; interactive &amp; screen-reader accessible</p>
 </header>
 <!--
-  Controls landmark restructure: the outer div is now role="region" so that
-  only the search input is wrapped in role="search". The filter group keeps
-  role="group". This makes the landmark structure accurate. Simon section 10.
+  Controls landmark restructure: the outer element is now a <section> (which
+  carries role="region" implicitly when it has an accessible name) so that
+  only the search input is wrapped in <search>. The filter group keeps
+  role="group". This makes the landmark structure accurate and uses native
+  HTML elements to satisfy the prefer-native-element lint rule. Simon section 10.
 -->
-<div class="controls" role="region" aria-label="Search and filter controls">
+<section class="controls" aria-label="Search and filter controls">
   <!--
     Using native <search> element instead of <div role="search"> to satisfy
     html-validate prefer-native-element rule and WCAG 4.1.2.
@@ -79,7 +81,7 @@
     <button type="button" class="filter-btn" data-cat="lanthanide" aria-pressed="false">Lanthanides</button>
     <button type="button" class="filter-btn" data-cat="actinide" aria-pressed="false">Actinides</button>
   </div>
-</div>
+</section>
 <main class="main">
   <div class="grid-wrapper">
     <!--
