@@ -1,0 +1,16 @@
+# Node.js dependencies installed during development and by the CI lint step.
+# Font files are copied from node_modules into assets/fonts/ and committed.
+# The node_modules directory itself is not committed.
+node_modules/
+
+# npm package lock is committed; these files are not.
+npm-debug.log*
+.npm
+
+# macOS finder artefacts
+.DS_Store
+
+# Editor artefacts
+.vscode/
+*.swp
+*.swo
