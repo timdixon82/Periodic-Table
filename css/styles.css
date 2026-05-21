@@ -1,0 +1,516 @@
+/* Self-hosted web fonts via @font-face.
+   The woff2 files are served from assets/fonts/ on the same origin,
+   so font-src in the Content-Security-Policy stays at 'self'. */
+
+@font-face {
+  font-family: Rajdhani;
+  src: url('../assets/fonts/rajdhani-latin-400-normal.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Rajdhani;
+  src: url('../assets/fonts/rajdhani-latin-500-normal.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Rajdhani;
+  src: url('../assets/fonts/rajdhani-latin-600-normal.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Rajdhani;
+  src: url('../assets/fonts/rajdhani-latin-700-normal.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Share Tech Mono';
+  src: url('../assets/fonts/share-tech-mono-latin-400-normal.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nunito Sans';
+  src: url('../assets/fonts/nunito-sans-latin-300-normal.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nunito Sans';
+  src: url('../assets/fonts/nunito-sans-latin-400-normal.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nunito Sans';
+  src: url('../assets/fonts/nunito-sans-latin-600-normal.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --bg: #0b0f1a;
+  --surface: #111827;
+  --card: #1a2235;
+  --border: #2a3550;
+  --text: #e2e8f0;
+  --muted: #8a99b3;
+  --accent: #38bdf8;
+  --alkali: #f87171;
+  --alkaline: #fb923c;
+  --transition: #60a5fa;
+  --post-trans: #34d399;
+  --metalloid: #a78bfa;
+  --nonmetal: #86efac;
+  --halogen: #fde047;
+  --noble: #22d3ee;
+  --lanthanide: #f472b6;
+  --actinide: #f97316;
+  --unknown: #94a3b8;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Nunito Sans', sans-serif;
+  font-weight: 300;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  background: var(--accent);
+  color: #000;
+  padding: 8px 16px;
+  font-weight: 700;
+  z-index: 9999;
+  border-radius: 0 0 6px;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+#sr-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+header {
+  text-align: center;
+  padding: 32px 24px 16px;
+  background: linear-gradient(180deg, #0d1626 0%, transparent 100%);
+}
+
+header h1 {
+  font-family: Rajdhani, sans-serif;
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+header p {
+  color: var(--muted);
+  font-size: .9rem;
+  letter-spacing: .04em;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 16px 24px;
+}
+
+#search {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .9rem;
+  padding: 10px 14px;
+  border-radius: 6px;
+  width: 220px;
+  outline: none;
+  transition: border-color .2s;
+}
+
+#search:focus {
+  border-color: var(--accent);
+}
+
+#search::placeholder {
+  color: var(--muted);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.filter-btn {
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: .78rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  background: var(--card);
+  color: var(--muted);
+  transition: all .2s;
+}
+
+.filter-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.filter-btn[data-cat="alkali-metal"] { --fc: var(--alkali); }
+.filter-btn[data-cat="alkaline-earth"] { --fc: var(--alkaline); }
+.filter-btn[data-cat="transition-metal"] { --fc: var(--transition); }
+.filter-btn[data-cat="post-transition"] { --fc: var(--post-trans); }
+.filter-btn[data-cat="metalloid"] { --fc: var(--metalloid); }
+.filter-btn[data-cat="nonmetal"] { --fc: var(--nonmetal); }
+.filter-btn[data-cat="halogen"] { --fc: var(--halogen); }
+.filter-btn[data-cat="noble-gas"] { --fc: var(--noble); }
+.filter-btn[data-cat="lanthanide"] { --fc: var(--lanthanide); }
+.filter-btn[data-cat="actinide"] { --fc: var(--actinide); }
+
+.filter-btn[aria-pressed="true"] {
+  color: var(--fc);
+  border-color: var(--fc);
+}
+
+.main {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 0 12px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.grid-wrapper {
+  overflow-x: auto;
+}
+
+#pt-grid {
+  display: grid;
+  grid-template-columns: repeat(18, minmax(56px, 1fr));
+  grid-template-rows: repeat(10, 56px);
+  gap: 3px;
+  min-width: 720px;
+}
+
+.el-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 2px;
+  position: relative;
+  transition: border-color .15s, background .15s, transform .1s;
+  outline: none;
+  --el-color: var(--unknown);
+}
+
+.el-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--el-color);
+  border-radius: 4px 4px 0 0;
+  opacity: .7;
+}
+
+.el-btn:hover,
+.el-btn:focus-visible {
+  border-color: var(--el-color);
+  background: color-mix(in srgb, var(--el-color) 10%, var(--card));
+  transform: scale(1.06);
+  z-index: 10;
+}
+
+.el-btn:focus-visible {
+  outline: 2px solid var(--el-color);
+  outline-offset: 1px;
+}
+
+.el-btn[aria-selected="true"] {
+  border-color: var(--el-color);
+  background: color-mix(in srgb, var(--el-color) 18%, var(--card));
+}
+
+.el-btn.dimmed {
+  opacity: .15;
+}
+
+.el-num {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .58rem;
+  color: var(--muted);
+  line-height: 1;
+  align-self: flex-start;
+  padding-left: 4px;
+}
+
+.el-sym {
+  font-family: Rajdhani, sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--el-color);
+  line-height: 1;
+}
+
+.el-name {
+  font-size: .52rem;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.1;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 2px;
+}
+
+.series-btn {
+  background: var(--card);
+  border: 1px dashed var(--border);
+  border-radius: 4px;
+  font-size: .65rem;
+  color: var(--muted);
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  outline: none;
+  font-family: 'Nunito Sans', sans-serif;
+}
+
+.series-btn:focus-visible {
+  outline: 2px solid var(--accent);
+}
+
+.gap-spacer {
+  grid-column: 1 / -1;
+}
+
+#info-panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--el-color, var(--accent));
+  border-radius: 10px;
+  padding: 24px;
+  min-height: 160px;
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  transition: border-color .3s;
+}
+
+.info-symbol-box {
+  flex-shrink: 0;
+  width: 100px;
+  height: 100px;
+  background: color-mix(in srgb, var(--el-color, var(--accent)) 12%, var(--surface));
+  border: 2px solid var(--el-color, var(--accent));
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.info-symbol-box .i-num {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .8rem;
+  color: var(--el-color, var(--accent));
+  opacity: .8;
+}
+
+.info-symbol-box .i-sym {
+  font-family: Rajdhani, sans-serif;
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--el-color, var(--accent));
+  line-height: 1;
+}
+
+.info-symbol-box .i-mass {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .65rem;
+  color: var(--muted);
+}
+
+.info-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.info-name {
+  font-family: Rajdhani, sans-serif;
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.info-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.info-tag {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  background: color-mix(in srgb, var(--el-color, var(--accent)) 20%, transparent);
+  color: var(--el-color, var(--accent));
+  border: 1px solid color-mix(in srgb, var(--el-color, var(--accent)) 40%, transparent);
+}
+
+.info-stats {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.stat-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 14px;
+  text-align: center;
+}
+
+.stat-box .s-label {
+  font-size: .65rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 2px;
+}
+
+.stat-box .s-val {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .95rem;
+  color: var(--text);
+}
+
+.info-desc {
+  font-size: .88rem;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.info-placeholder {
+  color: var(--muted);
+  font-size: .9rem;
+  opacity: .6;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .75rem;
+  color: var(--muted);
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+/* Category colour classes for legend dots.
+   These replace the inline style attributes on each .legend-dot span,
+   which would otherwise require 'unsafe-inline' in the style-src CSP
+   directive. Using classes keeps the policy at 'self' for styles. */
+.legend-dot--alkali { background: var(--alkali); }
+.legend-dot--alkaline { background: var(--alkaline); }
+.legend-dot--transition { background: var(--transition); }
+.legend-dot--post-trans { background: var(--post-trans); }
+.legend-dot--metalloid { background: var(--metalloid); }
+.legend-dot--nonmetal { background: var(--nonmetal); }
+.legend-dot--halogen { background: var(--halogen); }
+.legend-dot--noble { background: var(--noble); }
+.legend-dot--lanthanide { background: var(--lanthanide); }
+.legend-dot--actinide { background: var(--actinide); }
