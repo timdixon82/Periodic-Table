@@ -94,6 +94,7 @@
   --noble: #85e8f7;       /* was #22d3ee (5.1:1 fail); now 11.2:1 AAA pass */
   --lanthanide: #ffadd9;  /* was #f472b6 (4.6:1 fail); now 9.2:1 AAA pass */
   --actinide: #ffb97a;    /* was #f97316 (3.8:1 fail); now 9.4:1 AAA pass */
+
   /* --unknown updated from #94a3b8 (~6.2:1 fail) to #c2cce0 (~9.8:1 AAA pass)
      against --card (#1a2235). Carol re-test N3 (WCAG 1.4.6). 2026-05-21. */
   --unknown: #c2cce0;
