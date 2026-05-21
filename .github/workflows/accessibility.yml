@@ -34,10 +34,11 @@ jobs:
         run: npx wait-on http://localhost:8080 --timeout 15000
 
       - name: Pa11y at WCAG 2.2 AAA
-        # --chromium-arg="--no-sandbox" is required because GitHub Actions
+        # --chromium-args="--no-sandbox" is required because GitHub Actions
         # runners execute as root in a Docker container, where Chromium refuses
-        # to run without --no-sandbox.
-        run: pa11y --standard WCAG2AAA --chromium-arg="--no-sandbox" "http://localhost:8080"
+        # to run without --no-sandbox. The plural --chromium-args flag passes
+        # arguments directly to the Chromium process.
+        run: pa11y --standard WCAG2AAA --chromium-args="--no-sandbox" "http://localhost:8080"
 
       - name: axe-core at WCAG 2.2 AAA
         # --chrome-options="no-sandbox" is required for the same reason as the

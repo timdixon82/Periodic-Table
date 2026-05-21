@@ -51,10 +51,14 @@
   role="group". This makes the landmark structure accurate. Simon section 10.
 -->
 <div class="controls" role="region" aria-label="Search and filter controls">
-  <div role="search" aria-label="Search elements">
+  <!--
+    Using native <search> element instead of <div role="search"> to satisfy
+    html-validate prefer-native-element rule and WCAG 4.1.2.
+  -->
+  <search aria-label="Search elements">
     <label for="search" class="sr-only">Search elements by name, symbol or atomic number</label>
     <input type="search" id="search" placeholder="Search elements&hellip;" autocomplete="off">
-  </div>
+  </search>
   <div class="filters" role="group" aria-label="Filter by category">
     <button type="button" class="filter-btn" data-cat="alkali-metal" aria-pressed="false">Alkali Metals</button>
     <!--
