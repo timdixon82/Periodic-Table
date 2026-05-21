@@ -230,13 +230,24 @@ function setRovingTabindex(target) {
   });
 }
 
+// Returns the row index for any grid button, including series-btn elements.
+// Element buttons carry data-row directly. Series buttons carry neither
+// data-row nor aria-rowindex on themselves; their row is recorded on the
+// nearest ancestor with role="row", so we walk up to find it.
+function rowOf(btn) {
+  if (btn.dataset.row) { return parseInt(btn.dataset.row, 10); }
+  const rowEl = btn.closest('[role="row"]');
+  if (rowEl) { return parseInt(rowEl.getAttribute('aria-rowindex'), 10); }
+  return NaN;
+}
+
 // Handles arrow-key, Home, and End navigation within the grid.
 // Arrow navigation skips dimmed cells by delegating to findNearest, which
 // honours isNavigable. For ArrowUp/ArrowDown, if the target row contains no
 // navigable cell the move is silently cancelled (focus stays put).
 function handleGridKeydown(e) {
   const btn = e.currentTarget;
-  const row = parseInt(btn.dataset.row || btn.getAttribute('aria-rowindex'), 10);
+  const row = rowOf(btn);
   const col = parseInt(btn.dataset.col || btn.getAttribute('aria-colindex'), 10);
   let tr = row;
   let tc = col;
@@ -543,7 +554,7 @@ function applyFilters() {
   // cell after applying a filter while the grid is focused.
   const currentOwner = document.querySelector('#pt-grid .el-btn[tabindex="0"], #pt-grid .series-btn[tabindex="0"]');
   if (currentOwner && currentOwner.classList.contains('dimmed')) {
-    const row = parseInt(currentOwner.dataset.row || currentOwner.getAttribute('aria-rowindex'), 10);
+    const row = rowOf(currentOwner);
     const col = parseInt(currentOwner.dataset.col || currentOwner.getAttribute('aria-colindex'), 10);
     // Search outward from the dimmed cell's position to find the nearest
     // navigable cell. Try the same row first; findNearest with no direction
