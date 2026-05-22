@@ -28,6 +28,7 @@ Architecture Decision Records are in `decisions/`:
 - `decisions/002-no-build-step.md`: keep no build step.
 - `decisions/003-github-pages-hosting-and-security-headers.md`: stay on GitHub Pages and deliver security headers through meta tags.
 - `decisions/004-dependency-posture.md`: use no third-party JavaScript, and self-host the web fonts.
+- `decisions/005-release-automation-configuration.md`: configure release-please in manifest mode with the `simple` release type.
 
 ## Patterns
 
