@@ -45,14 +45,35 @@
   <h1>Periodic Table of Elements</h1>
   <p>118 elements &middot; interactive &amp; screen-reader accessible</p>
 </header>
-<div class="controls" role="search" aria-label="Filter elements">
-  <label for="search" class="sr-only">Search elements by name, symbol or atomic number</label>
-  <input type="search" id="search" placeholder="Search elements&hellip;" autocomplete="off">
+<!--
+  Controls landmark restructure: the outer element is now a <section> (which
+  carries role="region" implicitly when it has an accessible name) so that
+  only the search input is wrapped in <search>. The filter group keeps
+  role="group". This makes the landmark structure accurate and uses native
+  HTML elements to satisfy the prefer-native-element lint rule. Simon section 10.
+-->
+<section class="controls" aria-label="Search and filter controls">
+  <!--
+    Using native <search> element instead of <div role="search"> to satisfy
+    html-validate prefer-native-element rule and WCAG 4.1.2.
+  -->
+  <search aria-label="Search elements">
+    <label for="search" class="sr-only">Search elements by name, symbol or atomic number</label>
+    <input type="search" id="search" placeholder="Search elements&hellip;" autocomplete="off">
+  </search>
   <div class="filters" role="group" aria-label="Filter by category">
     <button type="button" class="filter-btn" data-cat="alkali-metal" aria-pressed="false">Alkali Metals</button>
-    <button type="button" class="filter-btn" data-cat="alkaline-earth" aria-pressed="false">Alkaline Earth</button>
+    <!--
+      Label changed from "Alkaline Earth" to "Alkaline Earth Metals" to match
+      the CAT_LABEL used in element aria-labels. WCAG 2.5.3. Simon section 2.
+    -->
+    <button type="button" class="filter-btn" data-cat="alkaline-earth" aria-pressed="false">Alkaline Earth Metals</button>
     <button type="button" class="filter-btn" data-cat="transition-metal" aria-pressed="false">Transition Metals</button>
-    <button type="button" class="filter-btn" data-cat="post-transition" aria-pressed="false">Post-Transition</button>
+    <!--
+      Label changed from "Post-Transition" to "Post-Transition Metals" to match
+      the CAT_LABEL used in element aria-labels. WCAG 2.5.3. Simon section 2.
+    -->
+    <button type="button" class="filter-btn" data-cat="post-transition" aria-pressed="false">Post-Transition Metals</button>
     <button type="button" class="filter-btn" data-cat="metalloid" aria-pressed="false">Metalloids</button>
     <button type="button" class="filter-btn" data-cat="nonmetal" aria-pressed="false">Nonmetals</button>
     <button type="button" class="filter-btn" data-cat="halogen" aria-pressed="false">Halogens</button>
@@ -60,25 +81,62 @@
     <button type="button" class="filter-btn" data-cat="lanthanide" aria-pressed="false">Lanthanides</button>
     <button type="button" class="filter-btn" data-cat="actinide" aria-pressed="false">Actinides</button>
   </div>
-</div>
+</section>
 <main class="main">
   <div class="grid-wrapper">
-    <div id="pt-grid" role="grid" aria-label="Periodic table of elements. Use arrow keys to navigate between elements, Enter or Space to select." aria-rowcount="9" aria-colcount="18"></div>
+    <!--
+      Visible h2 added above the grid for section heading. Simon section 18.
+    -->
+    <h2 class="grid-heading">Periodic Table</h2>
+    <!--
+      aria-rowcount corrected from "9" to "10" (there are 10 element rows).
+      tabindex="-1" added so the skip link can deliver focus here.
+      Simon sections 11 and 13.
+    -->
+    <div id="pt-grid" role="grid" aria-label="Periodic table of elements. Use arrow keys to navigate between elements, Enter or Space to select." aria-rowcount="10" aria-colcount="18" tabindex="-1"></div>
   </div>
-  <section id="info-panel" aria-label="Selected element details" aria-live="polite" tabindex="-1">
+  <!--
+    aria-live="polite" removed from #info-panel. The #sr-live region already
+    handles all announcements. Having both causes duplicate announcements in
+    VoiceOver and JAWS. tabindex="-1" kept for skip link focus target.
+    Simon section 12.
+  -->
+  <section id="info-panel" aria-label="Selected element details" tabindex="-1">
+    <!--
+      Static h2 shown before any element is selected. When an element is
+      selected, renderInfo() replaces this with an h2 of the element name.
+      Simon section 18.
+    -->
+    <h2 class="info-section-heading">Element Details</h2>
     <p class="info-placeholder">Select an element from the table above to view its details.</p>
   </section>
-  <section class="legend" aria-label="Category colour legend">
-    <div class="legend-item"><span class="legend-dot legend-dot--alkali" aria-hidden="true"></span>Alkali Metal</div>
-    <div class="legend-item"><span class="legend-dot legend-dot--alkaline" aria-hidden="true"></span>Alkaline Earth</div>
-    <div class="legend-item"><span class="legend-dot legend-dot--transition" aria-hidden="true"></span>Transition Metal</div>
-    <div class="legend-item"><span class="legend-dot legend-dot--post-trans" aria-hidden="true"></span>Post-Transition</div>
-    <div class="legend-item"><span class="legend-dot legend-dot--metalloid" aria-hidden="true"></span>Metalloid</div>
-    <div class="legend-item"><span class="legend-dot legend-dot--nonmetal" aria-hidden="true"></span>Nonmetal</div>
-    <div class="legend-item"><span class="legend-dot legend-dot--halogen" aria-hidden="true"></span>Halogen</div>
-    <div class="legend-item"><span class="legend-dot legend-dot--noble" aria-hidden="true"></span>Noble Gas</div>
-    <div class="legend-item"><span class="legend-dot legend-dot--lanthanide" aria-hidden="true"></span>Lanthanide</div>
-    <div class="legend-item"><span class="legend-dot legend-dot--actinide" aria-hidden="true"></span>Actinide</div>
+  <!--
+    Legend aria-label updated from "Category colour legend" to
+    "Element category legend" to remove "colour" from the programmatic name,
+    since colour is no longer the only category identifier. Simon section 5.3.
+  -->
+  <section class="legend" aria-label="Element category legend">
+    <!--
+      Visible h2 added as the first child of the legend section. Simon section 5.1.
+    -->
+    <h2 class="legend-heading">Element Categories</h2>
+    <!--
+      Legend dots updated from 10x10px plain squares to 16x16px shapes with
+      two-letter abbreviations. The abbreviation text is aria-hidden (the
+      adjacent label names the category). Black text on light category colours
+      achieves 11.9:1 to 15.9:1 contrast. WCAG 1.4.1. Simon sections 4.2 and 5.2.
+      Category names updated to full names matching CAT_LABEL values. Simon section 2.
+    -->
+    <div class="legend-item"><span class="legend-dot legend-dot--alkali" aria-hidden="true">AK</span>Alkali Metal</div>
+    <div class="legend-item"><span class="legend-dot legend-dot--alkaline" aria-hidden="true">AE</span>Alkaline Earth Metal</div>
+    <div class="legend-item"><span class="legend-dot legend-dot--transition" aria-hidden="true">TM</span>Transition Metal</div>
+    <div class="legend-item"><span class="legend-dot legend-dot--post-trans" aria-hidden="true">PT</span>Post-Transition Metal</div>
+    <div class="legend-item"><span class="legend-dot legend-dot--metalloid" aria-hidden="true">ML</span>Metalloid</div>
+    <div class="legend-item"><span class="legend-dot legend-dot--nonmetal" aria-hidden="true">NM</span>Nonmetal</div>
+    <div class="legend-item"><span class="legend-dot legend-dot--halogen" aria-hidden="true">HG</span>Halogen</div>
+    <div class="legend-item"><span class="legend-dot legend-dot--noble" aria-hidden="true">NG</span>Noble Gas</div>
+    <div class="legend-item"><span class="legend-dot legend-dot--lanthanide" aria-hidden="true">LA</span>Lanthanide</div>
+    <div class="legend-item"><span class="legend-dot legend-dot--actinide" aria-hidden="true">AC</span>Actinide</div>
   </section>
 </main>
 <script src="js/elements-data.js"></script>

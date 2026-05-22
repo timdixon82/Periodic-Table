@@ -37,6 +37,23 @@ const CAT_LABEL = {
   'unknown': 'Unknown',
 };
 
+// Maps element category keys to two-letter abbreviations for the non-colour
+// category identifier system. Abbreviations are shown in legend dots and as
+// tiny cell badges. WCAG 1.4.1. Simon sections 4.2 and 4.3.
+const CAT_ABBR = {
+  'alkali-metal': 'AK',
+  'alkaline-earth': 'AE',
+  'transition-metal': 'TM',
+  'post-transition': 'PT',
+  'metalloid': 'ML',
+  'nonmetal': 'NM',
+  'halogen': 'HG',
+  'noble-gas': 'NG',
+  'lanthanide': 'LA',
+  'actinide': 'AC',
+  'unknown': '?',
+};
+
 // Build a lookup map from atomic number to element object for fast access.
 const elMap = {};
 ELEMENTS.forEach(function (e) {
@@ -50,12 +67,29 @@ const searchInput = document.getElementById('search');
 const btnGrid = {};
 const validRows = [1, 2, 3, 4, 5, 6, 7, 9, 10];
 
+// Skip-link focus redirect for #pt-grid.
+// #pt-grid has tabindex="-1" so the "Skip to periodic table" skip link can
+// deliver focus to the grid wrapper. When focus arrives on the grid wrapper
+// itself, we redirect it to the first focusable roving-tabindex cell, so the
+// user lands on an interactive cell rather than the non-interactive wrapper.
+// Simon section 13.
+grid.addEventListener('focus', function () {
+  const firstFocusable = document.querySelector('#pt-grid .el-btn[tabindex="0"], #pt-grid .series-btn[tabindex="0"]');
+  if (firstFocusable) {
+    firstFocusable.focus();
+  }
+});
+
 // Returns the CSS custom property name for a given category key.
 function catVar(cat) {
   return CAT_VAR[cat] || '--unknown';
 }
 
 // Builds the periodic table grid and attaches all event listeners.
+// ARIA grid pattern requires grid > row > gridcell. Each data row's cells are
+// wrapped in a div with role="row" and aria-rowindex. The gap-spacer div with
+// role="presentation" is a direct child of the grid, between row wrappers.
+// Carol re-test N1 (WCAG 4.1.2). 2026-05-21.
 function buildGrid() {
   const allRows = [1, 2, 3, 4, 5, 6, 7, 'gap', 9, 10];
   let firstBtn = null;
@@ -69,6 +103,11 @@ function buildGrid() {
       return;
     }
 
+    // Create a row wrapper. aria-rowindex sits on the row, not on individual cells.
+    const rowWrapper = document.createElement('div');
+    rowWrapper.setAttribute('role', 'row');
+    rowWrapper.setAttribute('aria-rowindex', rowNum);
+
     for (let col = 1; col <= 18; col++) {
       const el = ELEMENTS.find(function (e) { return e.row === rowNum && e.col === col; });
 
@@ -81,10 +120,15 @@ function buildGrid() {
         btn.dataset.col = col;
         btn.dataset.cat = el.cat;
         btn.setAttribute('role', 'gridcell');
-        btn.setAttribute('aria-rowindex', rowNum <= 7 ? rowNum : rowNum - 1);
         btn.setAttribute('aria-colindex', col);
         btn.setAttribute('aria-selected', 'false');
         btn.setAttribute('tabindex', (!firstBtn) ? '0' : '-1');
+
+        // data-cat-abbr provides the two-letter category abbreviation for the
+        // CSS ::after pseudo-element cell badge. aria-hidden in CSS via the
+        // pseudo-element itself; the aria-label already names the category.
+        // WCAG 1.4.1. Simon section 4.3.
+        btn.dataset.catAbbr = CAT_ABBR[el.cat] || '';
 
         const stStr = el.state !== 'Unknown' ? `, ${el.state} at room temperature` : '';
         btn.setAttribute('aria-label', `${el.name}, symbol ${el.sym}, atomic number ${el.n}, ${CAT_LABEL[el.cat]}${stStr}, atomic mass ${el.mass}`);
@@ -113,7 +157,7 @@ function buildGrid() {
 
         btn.addEventListener('click', function () { selectElement(el.n); });
         btn.addEventListener('keydown', handleGridKeydown);
-        grid.appendChild(btn);
+        rowWrapper.appendChild(btn);
 
         if (!btnGrid[rowNum]) { btnGrid[rowNum] = {}; }
         btnGrid[rowNum][col] = btn;
@@ -124,7 +168,6 @@ function buildGrid() {
         ph.type = 'button';
         ph.className = 'series-btn';
         ph.setAttribute('role', 'gridcell');
-        ph.setAttribute('aria-rowindex', rowNum);
         ph.setAttribute('aria-colindex', col);
         ph.setAttribute('tabindex', '-1');
 
@@ -139,7 +182,7 @@ function buildGrid() {
         }
 
         ph.addEventListener('keydown', handleGridKeydown);
-        grid.appendChild(ph);
+        rowWrapper.appendChild(ph);
 
         if (!btnGrid[rowNum]) { btnGrid[rowNum] = {}; }
         btnGrid[rowNum][col] = ph;
@@ -149,35 +192,65 @@ function buildGrid() {
         empty.setAttribute('role', 'none');
         // Inline style removed: transparent background and no border are the
         // default for a div, so no style attribute is needed here.
-        grid.appendChild(empty);
+        rowWrapper.appendChild(empty);
       }
     }
+
+    grid.appendChild(rowWrapper);
   });
 }
 
-// Moves keyboard focus to the first element button in the given row.
+// Moves keyboard focus to the nearest navigable element button in the given
+// row, starting from the leftmost occupied column and scanning outward.
+// If the whole row is dimmed under the active filter, the jump is suppressed:
+// focus and the roving tab-index are left exactly as they were.
 function jumpToRow(row) {
   const rowBtns = btnGrid[row];
   if (!rowBtns) { return; }
   const firstCol = Math.min(...Object.keys(rowBtns).map(Number));
-  const btn = rowBtns[firstCol];
+  const btn = findNearest(row, firstCol, 'other');
   if (btn) {
     btn.focus();
     setRovingTabindex(btn);
   }
 }
 
-// Implements roving tab-index: sets tabindex="0" on the target and "-1" on all others.
+// Returns true when a button may receive focus under the current navigation
+// rules. A button is navigable when it exists and is not dimmed by an active
+// filter or search. Series-btn cells (Lanthanide / Actinide jump buttons) are
+// never dimmed by applyFilters, so they remain navigable whenever visible.
+function isNavigable(btn) {
+  return btn && !btn.classList.contains('dimmed');
+}
+
+// Implements roving tab-index: sets tabindex="0" on the target and "-1" on
+// all others. The navigable set is every grid button that passes isNavigable.
+// When a filter is active, dimmed buttons receive tabindex="-1", ensuring
+// exactly one navigable button holds tabindex="0".
 function setRovingTabindex(target) {
   document.querySelectorAll('#pt-grid .el-btn, #pt-grid .series-btn').forEach(function (b) {
     b.setAttribute('tabindex', b === target ? '0' : '-1');
   });
 }
 
+// Returns the row index for any grid button, including series-btn elements.
+// Element buttons carry data-row directly. Series buttons carry neither
+// data-row nor aria-rowindex on themselves; their row is recorded on the
+// nearest ancestor with role="row", so we walk up to find it.
+function rowOf(btn) {
+  if (btn.dataset.row) { return parseInt(btn.dataset.row, 10); }
+  const rowEl = btn.closest('[role="row"]');
+  if (rowEl) { return parseInt(rowEl.getAttribute('aria-rowindex'), 10); }
+  return NaN;
+}
+
 // Handles arrow-key, Home, and End navigation within the grid.
+// Arrow navigation skips dimmed cells by delegating to findNearest, which
+// honours isNavigable. For ArrowUp/ArrowDown, if the target row contains no
+// navigable cell the move is silently cancelled (focus stays put).
 function handleGridKeydown(e) {
   const btn = e.currentTarget;
-  const row = parseInt(btn.dataset.row || btn.getAttribute('aria-rowindex'), 10);
+  const row = rowOf(btn);
   const col = parseInt(btn.dataset.col || btn.getAttribute('aria-colindex'), 10);
   let tr = row;
   let tc = col;
@@ -207,27 +280,46 @@ function handleGridKeydown(e) {
   }
 }
 
-// Finds the nearest occupied cell in the given row, starting from the given column.
+// Finds the nearest navigable (non-dimmed, occupied) cell in the given row,
+// starting from the given column. Direction controls the search order:
+//   ArrowRight: scan right from col.
+//   ArrowLeft:  scan left from col.
+//   Home:       scan right from col 1 (find the leftmost navigable cell).
+//   End:        scan left from col 18 (find the rightmost navigable cell).
+//   ArrowUp / ArrowDown / other: scan outward from col in both directions.
+// Dimmed cells are skipped in every search path.
 function findNearest(row, col, dir) {
   const b = btnGrid[row] && btnGrid[row][col];
-  if (b) { return b; }
+  if (isNavigable(b)) { return b; }
 
-  if (dir === 'ArrowRight' || dir === 'End') {
+  if (dir === 'ArrowRight') {
     for (let c = col; c <= 18; c++) {
       const x = btnGrid[row] && btnGrid[row][c];
-      if (x) { return x; }
+      if (isNavigable(x)) { return x; }
     }
-  } else if (dir === 'ArrowLeft' || dir === 'Home') {
+  } else if (dir === 'ArrowLeft') {
     for (let c = col; c >= 1; c--) {
       const x = btnGrid[row] && btnGrid[row][c];
-      if (x) { return x; }
+      if (isNavigable(x)) { return x; }
+    }
+  } else if (dir === 'Home') {
+    // Scan right from col 1 to find the leftmost navigable cell in the row.
+    for (let c = 1; c <= 18; c++) {
+      const x = btnGrid[row] && btnGrid[row][c];
+      if (isNavigable(x)) { return x; }
+    }
+  } else if (dir === 'End') {
+    // Scan left from col 18 to find the rightmost navigable cell in the row.
+    for (let c = 18; c >= 1; c--) {
+      const x = btnGrid[row] && btnGrid[row][c];
+      if (isNavigable(x)) { return x; }
     }
   } else {
     for (let o = 0; o <= 18; o++) {
       const x1 = btnGrid[row] && btnGrid[row][col + o];
-      if (x1) { return x1; }
+      if (isNavigable(x1)) { return x1; }
       const x2 = btnGrid[row] && btnGrid[row][col - o];
-      if (x2) { return x2; }
+      if (isNavigable(x2)) { return x2; }
     }
   }
 
@@ -296,7 +388,10 @@ function renderInfo(el) {
   const content = document.createElement('div');
   content.className = 'info-content';
 
-  const nameDiv = document.createElement('div');
+  // info-name changed from div to h2. The page h1 is "Periodic Table of
+  // Elements"; the element name is the primary heading of the selected-element
+  // detail section, so h2 is the correct level. Simon section 6.
+  const nameDiv = document.createElement('h2');
   nameDiv.className = 'info-name';
   nameDiv.textContent = el.name;
 
@@ -346,19 +441,26 @@ function renderInfo(el) {
   infoPanel.appendChild(symbolBox);
   infoPanel.appendChild(content);
 
-  announce(`${el.name}, ${el.sym}, atomic number ${el.n}. ${el.desc.substring(0, 120)}.`);
+  // Full description announced; .substring(0, 120) removed. Element descriptions
+  // are a few sentences each. Announcing the full text serves WCAG 4.1.3.
+  // The live region is polite so it will not interrupt ongoing speech.
+  // Simon sections 12 and 17.
+  announce(`${el.name}, ${el.sym}, atomic number ${el.n}. ${el.desc}.`);
 }
 
-// Creates a stat box element with a label and value.
+// Creates a stat box element with a label and value as a description list.
+// The dl/dt/dd pattern provides a native semantic association between label
+// and value, which all screen readers understand. Previously used div/div
+// with no programmatic relationship. Simon section 6.
 function makeStatBox(label, value) {
-  const box = document.createElement('div');
+  const box = document.createElement('dl');
   box.className = 'stat-box';
 
-  const lbl = document.createElement('div');
+  const lbl = document.createElement('dt');
   lbl.className = 's-label';
   lbl.textContent = label;
 
-  const val = document.createElement('div');
+  const val = document.createElement('dd');
   val.className = 's-val';
   val.textContent = value;
 
@@ -417,6 +519,17 @@ document.querySelectorAll('.filter-btn').forEach(function (btn) {
 });
 
 // Applies the active search term and category filter to the grid.
+// After updating the dimmed classes, checks whether the element that currently
+// holds tabindex="0" (the roving focus owner) has become dimmed. If it has,
+// the roving tab-index and focus move to the nearest navigable element so that
+// the keyboard user is never left on a filtered-out cell.
+//
+// aria-hidden is toggled alongside the dimmed class. Setting aria-hidden="true"
+// on a filtered-out button removes it from the accessibility tree, so VoiceOver
+// and JAWS reading-cursor navigation (VO+Right, linear reading mode, and the
+// element rotor) skip it entirely. tabindex="-1" alone only removes a button
+// from Tab order; it does not prevent screen-reader linear traversal of the DOM.
+// WCAG 1.3.1, 4.1.2. Tim screen-reader re-check, 2026-05-22.
 function applyFilters() {
   const q = searchInput.value.trim().toLowerCase();
   let count = 0;
@@ -437,11 +550,53 @@ function applyFilters() {
     }
 
     btn.classList.toggle('dimmed', !show);
+
+    // Remove filtered-out buttons from the accessibility tree so VoiceOver and
+    // JAWS linear reading skips them. removeAttribute is used for the visible
+    // state to keep the DOM clean (aria-hidden="false" is redundant noise).
+    if (show) {
+      btn.removeAttribute('aria-hidden');
+    } else {
+      btn.setAttribute('aria-hidden', 'true');
+    }
+
     if (show) { count++; }
   });
 
   if (q) {
     announce(`${count} element${count !== 1 ? 's' : ''} match "${searchInput.value}".`);
+  }
+
+  // Edge case: if the current roving-tabindex owner has become dimmed by the
+  // filter, move the roving tab-index (and focus when the grid is active) to
+  // the nearest navigable element. This keeps exactly one navigable element at
+  // tabindex="0" and prevents a keyboard user from being stranded on a dimmed
+  // cell after applying a filter while the grid is focused.
+  const currentOwner = document.querySelector('#pt-grid .el-btn[tabindex="0"], #pt-grid .series-btn[tabindex="0"]');
+  if (currentOwner && currentOwner.classList.contains('dimmed')) {
+    const row = rowOf(currentOwner);
+    const col = parseInt(currentOwner.dataset.col || currentOwner.getAttribute('aria-colindex'), 10);
+    // Search outward from the dimmed cell's position to find the nearest
+    // navigable cell. Try the same row first; findNearest with no direction
+    // searches outward in both column directions.
+    let nearest = findNearest(row, col, 'other');
+    if (!nearest) {
+      // If no navigable cell exists in that row, scan all rows for any
+      // navigable cell and use the first one found.
+      for (let ri = 0; ri < validRows.length; ri++) {
+        nearest = findNearest(validRows[ri], col, 'other');
+        if (nearest) { break; }
+      }
+    }
+    if (nearest) {
+      setRovingTabindex(nearest);
+      // Move real focus only when a grid cell currently has focus, so that
+      // applying a filter from the filter-button toolbar does not unexpectedly
+      // steal focus away from the toolbar.
+      if (document.activeElement === currentOwner) {
+        nearest.focus();
+      }
+    }
   }
 }
 

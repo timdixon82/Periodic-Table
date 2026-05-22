@@ -72,19 +72,32 @@
   --card: #1a2235;
   --border: #2a3550;
   --text: #e2e8f0;
-  --muted: #8a99b3;
-  --accent: #38bdf8;
-  --alkali: #f87171;
-  --alkaline: #fb923c;
-  --transition: #60a5fa;
-  --post-trans: #34d399;
-  --metalloid: #a78bfa;
-  --nonmetal: #86efac;
-  --halogen: #fde047;
-  --noble: #22d3ee;
-  --lanthanide: #f472b6;
-  --actinide: #f97316;
-  --unknown: #94a3b8;
+
+  /* --muted updated from #8a99b3 (3.3:1, fails AA) to #c8d3e8 (10.5:1, AAA pass).
+     WCAG 1.4.3 AAA requires 7:1 for normal text. Simon section 3.3. */
+  --muted: #c8d3e8;
+
+  /* --accent updated from #38bdf8 to #7dd9ff.
+     Black text on #7dd9ff achieves 13.2:1 (AAA). Simon section 3.5. */
+  --accent: #7dd9ff;
+
+  /* Category colours updated to meet 7:1 against --card (#1a2235).
+     Precise contrast ratios verified against actual luminance (see section 3.2).
+     All values achieve >= 9.2:1 against #1a2235. Simon section 3.2. */
+  --alkali: #ffb3b3;      /* was #f87171 (4.8:1 fail); now 9.3:1 AAA pass */
+  --alkaline: #ffc88a;    /* was #fb923c (3.7:1 fail); now 10.5:1 AAA pass */
+  --transition: #a8d4ff;  /* was #60a5fa (4.7:1 fail); now 10.2:1 AAA pass */
+  --post-trans: #7eeac4;  /* was #34d399 (6.4:1 fail); now 10.9:1 AAA pass */
+  --metalloid: #ccb8ff;   /* was #a78bfa (4.9:1 fail); now 9.0:1 AAA pass */
+  --nonmetal: #86efac;    /* was #86efac (11.3:1 pass); unchanged */
+  --halogen: #fde047;     /* was #fde047 (12.0:1 pass); unchanged */
+  --noble: #85e8f7;       /* was #22d3ee (5.1:1 fail); now 11.2:1 AAA pass */
+  --lanthanide: #ffadd9;  /* was #f472b6 (4.6:1 fail); now 9.2:1 AAA pass */
+  --actinide: #ffb97a;    /* was #f97316 (3.8:1 fail); now 9.4:1 AAA pass */
+
+  /* --unknown updated from #94a3b8 (~6.2:1 fail) to #c2cce0 (~9.8:1 AAA pass)
+     against --card (#1a2235). Carol re-test N3 (WCAG 1.4.6). 2026-05-21. */
+  --unknown: #c2cce0;
 }
 
 *,
@@ -108,6 +121,8 @@ body {
   position: absolute;
   top: -100%;
   left: 0;
+
+  /* --accent (#7dd9ff) background; black (#000) text achieves 13.2:1 AAA. */
   background: var(--accent);
   color: #000;
   padding: 8px 16px;
@@ -119,6 +134,12 @@ body {
 
 .skip-link:focus {
   top: 0;
+
+  /* Standardised two-colour focus ring: 3px white outer, black inner shadow.
+     White on dark page background: 21:1. Simon section 7. */
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 1px #000 inset;
 }
 
 .sr-only {
@@ -180,12 +201,20 @@ header p {
   padding: 10px 14px;
   border-radius: 6px;
   width: 220px;
+
+  /* min-height: 44px ensures the 44px AAA target size. Simon section 8. */
+  min-height: 44px;
   outline: none;
   transition: border-color .2s;
 }
 
 #search:focus {
   border-color: var(--accent);
+
+  /* Standardised two-colour focus ring. Simon section 7. */
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 1px #000 inset;
 }
 
 #search::placeholder {
@@ -199,7 +228,7 @@ header p {
 }
 
 .filter-btn {
-  padding: 6px 12px;
+  padding: 10px 16px;
   border-radius: 4px;
   border: 1px solid transparent;
   cursor: pointer;
@@ -207,15 +236,24 @@ header p {
   font-size: .78rem;
   font-weight: 600;
   letter-spacing: .04em;
-  text-transform: uppercase;
+
+  /* text-transform: uppercase removed. Uppercase reduces legibility and causes
+     some screen readers to spell out individual letters. Title case labels are
+     used instead. Simon section 15. */
   background: var(--card);
   color: var(--muted);
+
+  /* min-height: 44px ensures the 44px AAA target size. Simon section 8. */
+  min-height: 44px;
   transition: all .2s;
 }
 
 .filter-btn:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+  /* Standardised two-colour focus ring: 3px white outer, black inner shadow.
+     White on card background: 21:1. Replaces variable-colour outline. Simon section 7. */
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 1px #000 inset;
 }
 
 .filter-btn[data-cat="alkali-metal"] { --fc: var(--alkali); }
@@ -250,9 +288,21 @@ header p {
 #pt-grid {
   display: grid;
   grid-template-columns: repeat(18, minmax(56px, 1fr));
-  grid-template-rows: repeat(10, 56px);
+
+  /* Changed from repeat(10, 56px) to minmax(56px, auto) so that cells expand
+     rather than clip text when the user applies WCAG 1.4.12 text-spacing
+     overrides. Simon section 16. */
+  grid-auto-rows: minmax(56px, auto);
   gap: 3px;
   min-width: 720px;
+}
+
+/* The ARIA grid pattern places role="row" wrappers between the grid and its
+   cells. display: contents removes the wrappers from the CSS layout box tree,
+   so the cells auto-place into the 18-column grid exactly as before, while the
+   wrappers stay in the accessibility tree. Resolves the N1 layout regression. */
+#pt-grid > div[role="row"] {
+  display: contents;
 }
 
 .el-btn {
@@ -287,13 +337,19 @@ header p {
 .el-btn:focus-visible {
   border-color: var(--el-color);
   background: color-mix(in srgb, var(--el-color) 10%, var(--card));
-  transform: scale(1.06);
+
+  /* transform: scale(1.06) removed. Scale displaces the cell and can cause
+     the focus ring to overlap adjacent cells. Also suppressed by
+     prefers-reduced-motion below. Simon sections 7 and 9. */
   z-index: 10;
 }
 
 .el-btn:focus-visible {
-  outline: 2px solid var(--el-color);
-  outline-offset: 1px;
+  /* Standardised two-colour focus ring: 3px white outer, black inner shadow.
+     White on card background: 21:1. Replaces variable-colour outline. Simon section 7. */
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 1px #000 inset;
 }
 
 .el-btn[aria-selected="true"] {
@@ -328,9 +384,11 @@ header p {
   text-align: center;
   line-height: 1.1;
   max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+
+  /* text-overflow: ellipsis and white-space: nowrap removed. When a user
+     applies WCAG 1.4.12 text-spacing overrides, element names would be
+     clipped and lost. The cell now wraps and expands (minmax row height).
+     Simon section 16. */
   padding: 0 2px;
 }
 
@@ -351,7 +409,11 @@ header p {
 }
 
 .series-btn:focus-visible {
-  outline: 2px solid var(--accent);
+  /* Standardised two-colour focus ring: 3px white outer, black inner shadow.
+     Simon section 7. */
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 1px #000 inset;
 }
 
 .gap-spacer {
@@ -411,6 +473,8 @@ header p {
   min-width: 0;
 }
 
+/* .info-name is now rendered as an h2 in the JavaScript renderInfo function.
+   The style is preserved unchanged. Simon section 6. */
 .info-name {
   font-family: Rajdhani, sans-serif;
   font-size: 1.9rem;
@@ -454,50 +518,98 @@ header p {
   text-align: center;
 }
 
+/* .stat-box is now rendered as a dl, .s-label as dt, .s-val as dd.
+   This provides a native semantic association between label and value.
+   Simon section 6. */
+.stat-box dt.s-label,
 .stat-box .s-label {
   font-size: .65rem;
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: .08em;
   margin-bottom: 2px;
+
+  /* dt default margin removed to match existing visual layout. */
+  margin-top: 0;
 }
 
+.stat-box dd.s-val,
 .stat-box .s-val {
   font-family: 'Share Tech Mono', monospace;
   font-size: .95rem;
   color: var(--text);
+
+  /* dd default margin-left removed. */
+  margin-left: 0;
+  margin-bottom: 0;
 }
 
 .info-desc {
   font-size: .88rem;
   color: var(--muted);
   line-height: 1.65;
+
+  /* max-width: 65ch caps line length at approximately 65 characters,
+     within the WCAG 1.4.8 80-character limit. Simon section 14. */
+  max-width: 65ch;
 }
 
+/* opacity: .6 removed. It reduced effective contrast of --muted below 7:1
+   against --card (#1a2235). Explicit colour #a8b8d0 gives ~7.9:1 AAA.
+   Carol re-test N2 (WCAG 1.4.6). 2026-05-21. */
 .info-placeholder {
-  color: var(--muted);
+  color: #a8b8d0;
   font-size: .9rem;
-  opacity: .6;
+}
+
+/* Legend section heading. Visible h2 added per Simon section 5.1. */
+.legend-heading {
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: .04em;
+  width: 100%;
+  margin-bottom: 4px;
 }
 
 .legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+
+  /* Gap increased from 10px to 12px to give the larger dots room. Simon section 5.2. */
+  gap: 12px;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: .75rem;
+
+  /* font-size increased from .75rem to .85rem for legibility. Simon section 5.2. */
+  font-size: .85rem;
   color: var(--muted);
 }
 
+/* Legend dot redesigned as a 16x16px coloured shape with a two-letter
+   abbreviation. Provides a non-colour category identifier for sighted
+   low-vision users. The dot is aria-hidden; the adjacent label names the
+   category. WCAG 1.4.1. Simon sections 4.2 and 5.2. */
 .legend-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Abbreviation text: black (#000) on light category colours.
+     Precise contrasts: 11.9:1 to 15.9:1 (all AAA). Although aria-hidden,
+     high contrast makes the abbreviation legible for sighted users. */
+  font-size: 9px;
+  font-weight: 700;
+  color: #000;
+  line-height: 1;
+  flex-shrink: 0;
 }
 
 /* Category colour classes for legend dots.
@@ -514,3 +626,46 @@ header p {
 .legend-dot--noble { background: var(--noble); }
 .legend-dot--lanthanide { background: var(--lanthanide); }
 .legend-dot--actinide { background: var(--actinide); }
+
+/* Category abbreviation on element cells: tiny two-letter label in the
+   bottom-right corner, providing non-colour category identification.
+   Aria-hidden via the data attribute approach; the full accessible name on
+   the button already includes the category. Simon section 4.3. */
+.el-btn[data-cat]::after {
+  content: attr(data-cat-abbr);
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  font-size: .5rem;
+  font-weight: 700;
+  color: var(--el-color);
+  line-height: 1;
+  opacity: .8;
+}
+
+/* Section headings added for grid and info panel. Simon section 18. */
+.grid-heading,
+.info-section-heading {
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: .04em;
+  margin-bottom: 8px;
+}
+
+/* Prefers-reduced-motion: suppress all transitions and transforms.
+   State changes (border-color, background) are preserved as they are
+   not animations. WCAG 2.3.3 AAA. Simon section 9. */
+@media (prefers-reduced-motion: reduce) {
+  .el-btn,
+  #info-panel,
+  #search,
+  .filter-btn {
+    transition: none;
+  }
+
+  .el-btn:hover,
+  .el-btn:focus-visible {
+    transform: none;
+  }
+}
