@@ -520,6 +520,13 @@ document.querySelectorAll('.filter-btn').forEach(function (btn) {
 // holds tabindex="0" (the roving focus owner) has become dimmed. If it has,
 // the roving tab-index and focus move to the nearest navigable element so that
 // the keyboard user is never left on a filtered-out cell.
+//
+// aria-hidden is toggled alongside the dimmed class. Setting aria-hidden="true"
+// on a filtered-out button removes it from the accessibility tree, so VoiceOver
+// and JAWS reading-cursor navigation (VO+Right, linear reading mode, and the
+// element rotor) skip it entirely. tabindex="-1" alone only removes a button
+// from Tab order; it does not prevent screen-reader linear traversal of the DOM.
+// WCAG 1.3.1, 4.1.2. Tim screen-reader re-check, 2026-05-22.
 function applyFilters() {
   const q = searchInput.value.trim().toLowerCase();
   let count = 0;
@@ -540,6 +547,16 @@ function applyFilters() {
     }
 
     btn.classList.toggle('dimmed', !show);
+
+    // Remove filtered-out buttons from the accessibility tree so VoiceOver and
+    // JAWS linear reading skips them. removeAttribute is used for the visible
+    // state to keep the DOM clean (aria-hidden="false" is redundant noise).
+    if (show) {
+      btn.removeAttribute('aria-hidden');
+    } else {
+      btn.setAttribute('aria-hidden', 'true');
+    }
+
     if (show) { count++; }
   });
 
