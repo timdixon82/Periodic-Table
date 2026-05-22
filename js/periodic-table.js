@@ -200,12 +200,15 @@ function buildGrid() {
   });
 }
 
-// Moves keyboard focus to the first element button in the given row.
+// Moves keyboard focus to the nearest navigable element button in the given
+// row, starting from the leftmost occupied column and scanning outward.
+// If the whole row is dimmed under the active filter, the jump is suppressed:
+// focus and the roving tab-index are left exactly as they were.
 function jumpToRow(row) {
   const rowBtns = btnGrid[row];
   if (!rowBtns) { return; }
   const firstCol = Math.min(...Object.keys(rowBtns).map(Number));
-  const btn = rowBtns[firstCol];
+  const btn = findNearest(row, firstCol, 'other');
   if (btn) {
     btn.focus();
     setRovingTabindex(btn);
