@@ -14,9 +14,9 @@
     "@fontsource/nunito-sans": "^5.2.5",
     "@fontsource/rajdhani": "^5.2.5",
     "@fontsource/share-tech-mono": "^5.2.5",
-    "eslint": "^9.26.0",
+    "eslint": "^10.4.0",
     "html-validate": "^11.2.0",
-    "stylelint": "^16.19.1",
-    "stylelint-config-standard": "^38.0.0"
+    "stylelint": "^17.12.0",
+    "stylelint-config-standard": "^40.0.0"
   }
 }
