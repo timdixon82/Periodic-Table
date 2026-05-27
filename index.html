@@ -27,7 +27,7 @@
     defence in depth.
 -->
 <meta http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+      content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' https://timdixon82.goatcounter.com; object-src 'none'; base-uri 'self'; form-action 'none'; connect-src 'self' https://timdixon82.goatcounter.com">
 <!--
   Referrer-Policy delivered via meta tag. 'strict-origin-when-cross-origin'
   sends the origin only (not the full URL) on cross-origin requests, limiting
@@ -141,5 +141,7 @@
 </main>
 <script src="js/elements-data.js"></script>
 <script src="js/periodic-table.js"></script>
+<script data-goatcounter="https://timdixon82.goatcounter.com/count"
+        async src="./assets/analytics/count.js"></script>
 </body>
 </html>
