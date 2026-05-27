@@ -14,3 +14,6 @@ npm-debug.log*
 .vscode/
 *.swp
 *.swo
+
+# Generated at CI time by the accessibility workflow; must not be committed.
+pa11y.ci.json
