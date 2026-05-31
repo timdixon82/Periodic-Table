@@ -32,7 +32,15 @@ Architecture Decision Records are in `decisions/`:
 
 ## Patterns
 
-No pattern pages yet.
+- `patterns/github-pages-deploy.md`: unbundled rsync deploy to GitHub Pages — the approach used by this project, including the full exclude list and activation notes.
+
+## Privacy
+
+- `privacy.md`: analytics posture (GoatCounter self-hosted), data collection statement, third-party services, and UK GDPR obligations.
+
+## Release process
+
+- `release-process.md`: branching model, pull-request flow, merge gate, and release steps (release-please and GitHub Pages deploy).
 
 ## Glossary
 
