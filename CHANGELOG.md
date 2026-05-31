@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.1.0](https://github.com/timdixon82/Periodic-Table/compare/v1.0.0...v1.1.0) (2026-05-31)
+
+
+### Features
+
+* **analytics:** add self-hosted GoatCounter analytics ([#6](https://github.com/timdixon82/Periodic-Table/issues/6)) ([70930e3](https://github.com/timdixon82/Periodic-Table/commit/70930e3f28b3b1e72974b184c3def4300bf93617))
+* **scripts:** add next-q.sh for session Q-number display ([886f811](https://github.com/timdixon82/Periodic-Table/commit/886f8112a57b9982735d8010198468475573f0d3))
+* **scripts:** add next-q.sh for session Q-number display ([884dc3a](https://github.com/timdixon82/Periodic-Table/commit/884dc3a13a275a5dc832df1e4f2824c78b722c4a))
+
+
+### Bug Fixes
+
+* **security:** merge origin/main security patch for pre-tool-use.sh ([bf8c5b4](https://github.com/timdixon82/Periodic-Table/commit/bf8c5b4c1fb5db670c5d92b49581f479c0f64c36))
+* **security:** patch pre-tool-use.sh ([0dd221e](https://github.com/timdixon82/Periodic-Table/commit/0dd221e637876382079d748dfcebe1abf4d75e9f))
+* **security:** patch pre-tool-use.sh — six safety-hook vulnerabilities ([8ab79ed](https://github.com/timdixon82/Periodic-Table/commit/8ab79ed163f7f3df3b40db2c2e2c1eda1d9b7159))
+
 ## [1.0.0](https://github.com/timdixon82/Periodic-Table/compare/v1.0.0...v1.0.0) (2026-05-22)
 
 
