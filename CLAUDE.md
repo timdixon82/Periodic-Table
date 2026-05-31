@@ -20,12 +20,43 @@ Every file the team produces, and every message sent to Tim, must be screen-read
 
 ## How questions are put to Tim
 
-When the team needs decisions from Tim, Sonja presents them in a fixed, screen-reader-friendly format so Tim can answer quickly and unambiguously:
+Questions use a two-level numbering scheme that keeps team-governance questions separate from project-specific ones.
 
-- Every question has a number from a single continuous sequence that never resets and never reuses a number. The sequence runs across the whole engagement, not per batch and not per session, so no two questions ever share a number. Each question is written with a "Q" prefix, for example Q24, and keeps that number for its whole life.
+### AgentTeam questions (Q\<n\>)
+
+Questions raised in an AgentTeam session use a plain numeric sequence: Q267, Q268, and so on. This sequence covers only team-governance decisions — agent changes, template backports, tooling choices, cross-project policy. It never resets and never reuses a number. Run `bash scripts/next-q.sh` from the team root to get the next free number.
+
+### Project questions (Q-\<PREFIX\>\<n\>)
+
+Questions raised inside a project session use the project's two-to-four-letter prefix followed by a number starting at 1: Q-CP1, Q-CP2; Q-ICCC1, Q-ICCC2; and so on. The number sequence is per-project and independent of every other project. Run `bash scripts/next-q.sh` from the project root to get the next free number for that project.
+
+Project prefix register:
+
+| Project | Prefix | Example |
+|---|---|---|
+| Image Colour Contrast Checker | ICCC | Q-ICCC1 |
+| Sophie's Escape: Witch's Castle | SEWC | Q-SEWC1 |
+| SWOT Builder | SWOT | Q-SWOT1 |
+| Family Reward Chart | FRC | Q-FRC1 |
+| Periodic Table | PT | Q-PT1 |
+| Clock Practice | CP | Q-CP1 |
+| Braille Reference | BR | Q-BR1 |
+| LLBS | LLBS | Q-LLBS1 |
+| LLBS Braille Name Generator | BNG | Q-BNG1 |
+| Poop Breakout | PB | Q-PB1 |
+| Birthday eCards | BE | Q-BE1 |
+| Social Media Accessibility Checker Extension | SMACE | Q-SMACE1 |
+| James Nerf Squad | JNS | Q-JNS1 |
+| timdixon82 GitHub profile | T82 | Q-T821 |
+| timdixon82.github.io | T82GH | Q-T82GH1 |
+
+New projects get a prefix when their work folder is opened. Sonja assigns it and records it in the project brief and in this table.
+
+### Format rules (both levels)
+
 - Every answer option is lettered (A, B, C, and so on), with each option on its own line.
-- Tim answers with the question number and the option letter together. For example, "Q24B" means option B for question Q24. He can answer several at once, such as "Q24B, Q25A, Q26C".
-- A question with no fixed options (a free-text answer) still has a number, and Tim answers by quoting the number.
+- Tim answers with the question number and the option letter together. For example "Q-CP1B" or "Q268A". He can answer several at once.
+- A question with no fixed options still has a number, and Tim answers by quoting the number and his reply.
 - Where Sonja has a recommendation, she names the recommended option so Tim can accept it in one step.
 - Questions are always batched: an agent gathers all its open questions before sending them to Sonja, and Sonja puts the whole batch to Tim at once, never one at a time.
 

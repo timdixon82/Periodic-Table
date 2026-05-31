@@ -46,5 +46,11 @@ build/
 # Transcripts written by the session hook — local audit trail, not for the repo.
 .claude/transcripts/
 
+# understand-anything generated knowledge graph and fingerprints — generated artefact, not for commit.
+.understand-anything/
+
+# Agent worktrees created by the harness for isolated runs — ephemeral, not for the repo.
+.claude/worktrees/
+
 # CI-only Pa11y config, derived from pa11y.json in the accessibility workflow. Generated, never committed.
 pa11y.ci.json
