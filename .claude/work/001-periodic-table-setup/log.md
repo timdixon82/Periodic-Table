@@ -179,3 +179,9 @@ Decision 2A: the accessibility workflow `--no-sandbox` fix is deferred to Phase 
 Phase 1 of the Periodic-Table project is complete. Remaining 001 work-folder closeout: the end-of-work wiki lint. Periodic-Table Phase 2, the accessibility remediation, is work folder 003.
 - [2026-05-30 23:07:55] subagent completed
 - [2026-05-30 23:22:02] subagent completed
+- [2026-05-31 13:27:03] subagent completed
+- [2026-05-31 13:56:46] subagent completed
+- [2026-05-31 14:17:44] subagent completed
+- [2026-06-05 14:14:28] subagent completed
+- [2026-06-05 14:20:12] subagent completed
+- [2026-06-05 14:29:50] subagent completed
