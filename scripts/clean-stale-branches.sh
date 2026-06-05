@@ -22,7 +22,9 @@ echo "Fetching and pruning remote tracking refs..."
 git -C "$REPO" fetch --prune
 
 echo "Deleting stale local sync branches..."
-git -C "$REPO" branch -d \
+# -D (force delete) is required because these branches were squash-merged
+# into main; git branch -d cannot verify a squash merge and refuses to delete.
+git -C "$REPO" branch -D \
   chore/sync-template-v1.4.2 \
   chore/sync-template-v1.4.5 \
   chore/sync-template-v1.5.3 \
