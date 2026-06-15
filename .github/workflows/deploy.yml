@@ -47,27 +47,41 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-
-  # ── BUNDLED JOB ─────────────────────────────────────────────────────────────
-  # Use for projects with an npm build step that emits a folder (e.g. dist).
-  # DELETE this job if your project is UNBUNDLED.
-  build:
+  build-unbundled:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e  # v6.4.0
-        with:
-          node-version: lts/*
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build
+      - name: Assemble site
+        run: |
+          mkdir _site
+          rsync -av \
+            --exclude='_site' \
+            --exclude='node_modules' \
+            --exclude='.claude' \
+            --exclude='.github' \
+            --exclude='docs' \
+            --exclude='scripts' \
+            --exclude='tests' \
+            --exclude='package.json' \
+            --exclude='package-lock.json' \
+            --exclude='eslint.config.js' \
+            --exclude='.stylelintrc.json' \
+            --exclude='.editorconfig' \
+            --exclude='.gitignore' \
+            --exclude='.htmlvalidate.json' \
+            --exclude='.release-please-manifest.json' \
+            --exclude='pa11y.json' \
+            --exclude='release-please-config.json' \
+            --exclude='playwright.config.js' \
+            --exclude='CHANGELOG.md' \
+            --exclude='CLAUDE.md' \
+            --exclude='README.md' \
+            --exclude='VERSION' \
+            --exclude='todo.md' \
+            . _site/
+            # Adjust excludes if the root contains other non-serving files.
 
       - name: Configure Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d  # v6.0.0
@@ -75,10 +89,10 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9  # v5.0.0
         with:
-          path: dist   # change to your build output folder if different
+          path: _site
 
-  deploy:
-    needs: build
+  deploy-unbundled:
+    needs: build-unbundled
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -87,49 +101,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128  # v5.0.0
-
-
-  # ── UNBUNDLED JOB ───────────────────────────────────────────────────────────
-  # Use for projects with no build step — files served straight from the repo.
-  # Reference implementation: SWOT Builder.
-  # DELETE or COMMENT OUT this job if your project is BUNDLED.
-  #
-  # build-unbundled:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Check out the code
-  #       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
-  #
-  #     - name: Assemble site
-  #       run: |
-  #         mkdir _site
-  #         rsync -av \
-  #           --exclude='_site' \
-  #           --exclude='node_modules' \
-  #           --exclude='.github' \
-  #           --exclude='docs' \
-  #           --exclude='package.json' \
-  #           --exclude='package-lock.json' \
-  #           --exclude='.eslintrc.js' \
-  #           --exclude='.stylelintrc.json' \
-  #           . _site/
-  #         # Adjust the exclude list to match files your project must not serve.
-  #
-  #     - name: Configure Pages
-  #       uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d  # v6.0.0
-  #
-  #     - name: Upload Pages artifact
-  #       uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9  # v5.0.0
-  #       with:
-  #         path: _site
-  #
-  # deploy-unbundled:
-  #   needs: build-unbundled
-  #   runs-on: ubuntu-latest
-  #   environment:
-  #     name: github-pages
-  #     url: ${{ steps.deployment.outputs.page_url }}
-  #   steps:
-  #     - name: Deploy to GitHub Pages
-  #       id: deployment
-  #       uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128  # v5.0.0
