@@ -138,3 +138,5 @@ const ELEMENTS = [
   {n: 102, sym: 'No', name: 'Nobelium', mass: '(259)', cat: 'actinide', state: 'Solid', row: 10, col: 16, desc: 'Named after Alfred Nobel. A synthetic, radioactive element produced in minute quantities and used exclusively in scientific research.'},
   {n: 103, sym: 'Lr', name: 'Lawrencium', mass: '(266)', cat: 'actinide', state: 'Solid', row: 10, col: 17, desc: 'Named after Ernest Lawrence, inventor of the cyclotron. The last actinide and a synthetic, radioactive element with no known practical applications.'},
 ];
+
+export { ELEMENTS };
