@@ -1,32 +1,40 @@
 // ESLint flat config (ESLint 9+).
-// Both JS files run in the browser as classic scripts (no module system).
-// ELEMENTS is defined in elements-data.js and consumed by periodic-table.js;
-// it is exposed as a browser global, not via import/export.
+// js/periodic-table.js, js/elements-data.js, and js/pt-logic.js run in the
+// browser as ES modules (index.html loads periodic-table.js with
+// <script type="module">, which imports the other two).
+// Browser globals come from the `globals` package (a development dependency),
+// so the no-undef rule catches real undefined references without a hand-kept list.
 
-import globals from 'eslint/use-at-your-own-risk';
+import globals from 'globals';
 
 export default [
   {
     files: ['js/**/*.js'],
     languageOptions: {
       ecmaVersion: 2020,
-      sourceType: 'script',
-      globals: {
-        document: 'readonly',
-        window: 'readonly',
-        requestAnimationFrame: 'readonly',
-        // ELEMENTS is defined in elements-data.js; periodic-table.js reads it
-        // as a browser global set by the first script tag.
-        ELEMENTS: 'writable',
-      },
+      sourceType: 'module',
+      globals: globals.browser,
     },
     rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^ELEMENTS$' }],
+      'no-unused-vars': ['error'],
       'no-undef': 'error',
       'eqeqeq': 'error',
       'no-eval': 'error',
       'no-implied-eval': 'error',
       'no-new-func': 'error',
+    },
+  },
+  {
+    files: ['tests/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 2020,
+      sourceType: 'module',
+      globals: globals.node,
+    },
+    rules: {
+      'no-unused-vars': ['error'],
+      'no-undef': 'error',
+      'eqeqeq': 'error',
     },
   },
 ];
