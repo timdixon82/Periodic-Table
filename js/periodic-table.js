@@ -1,11 +1,15 @@
 /* periodic-table.js
  *
  * All interactive behaviour for the periodic table page.
- * Depends on elements-data.js, which must be loaded first.
- * The ELEMENTS array and its companion maps are defined there.
+ * Element data comes from elements-data.js. The pure lookup, filter, and
+ * search logic lives in pt-logic.js so it can be unit tested independently
+ * of the browser; this file imports it rather than reimplementing it.
  */
 
 'use strict';
+
+import { ELEMENTS } from './elements-data.js';
+import { buildElementMap, getElementAt, elementMatchesFilter, elementMatchesQuery } from './pt-logic.js';
 
 // Maps element category keys to CSS custom property names.
 const CAT_VAR = {
@@ -55,10 +59,7 @@ const CAT_ABBR = {
 };
 
 // Build a lookup map from atomic number to element object for fast access.
-const elMap = {};
-ELEMENTS.forEach(function (e) {
-  elMap[e.n] = e;
-});
+const elMap = buildElementMap(ELEMENTS);
 
 const grid = document.getElementById('pt-grid');
 const infoPanel = document.getElementById('info-panel');
@@ -109,7 +110,7 @@ function buildGrid() {
     rowWrapper.setAttribute('aria-rowindex', rowNum);
 
     for (let col = 1; col <= 18; col++) {
-      const el = ELEMENTS.find(function (e) { return e.row === rowNum && e.col === col; });
+      const el = getElementAt(ELEMENTS, rowNum, col);
 
       if (el) {
         const btn = document.createElement('button');
@@ -539,15 +540,7 @@ function applyFilters() {
     const el = elMap[n];
     if (!el) { return; }
 
-    let show = true;
-    if (activeFilter && el.cat !== activeFilter) { show = false; }
-
-    if (q) {
-      const ok = el.name.toLowerCase().includes(q)
-        || el.sym.toLowerCase().startsWith(q)
-        || el.n.toString() === q;
-      if (!ok) { show = false; }
-    }
+    const show = elementMatchesFilter(el, activeFilter) && elementMatchesQuery(el, q);
 
     btn.classList.toggle('dimmed', !show);
 

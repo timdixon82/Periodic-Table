@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.1](https://github.com/timdixon82/Periodic-Table/compare/v1.1.0...v1.1.1) (2026-07-16)
+
+
+### Bug Fixes
+
+* add dependabot cooldown block to satisfy semgrep dependabot-missing-cooldown rule ([#38](https://github.com/timdixon82/Periodic-Table/issues/38)) ([ccd32e6](https://github.com/timdixon82/Periodic-Table/commit/ccd32e610da651768aacaf66112c595bc9d14a50))
+* clean-stale-branches.sh switches to main before deleting ([#26](https://github.com/timdixon82/Periodic-Table/issues/26)) ([55d2186](https://github.com/timdixon82/Periodic-Table/commit/55d21865a1ff4189c1df6aa9d18b76f74857b4cb))
+* use -D for squash-merged branch deletion in clean-stale-branches.sh ([#28](https://github.com/timdixon82/Periodic-Table/issues/28)) ([5b08862](https://github.com/timdixon82/Periodic-Table/commit/5b088626df1ba847433a983d105e9438ab04058b))
+
 ## [1.1.0](https://github.com/timdixon82/Periodic-Table/compare/v1.0.0...v1.1.0) (2026-05-31)
 
 
