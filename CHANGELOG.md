@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/timdixon82/Periodic-Table/compare/v1.1.1...v1.1.2) (2026-07-23)
+
+
+### Bug Fixes
+
+* remove duplicate 'Check the CI archetype' step in accessibility.yml ([#43](https://github.com/timdixon82/Periodic-Table/issues/43)) ([38c5a31](https://github.com/timdixon82/Periodic-Table/commit/38c5a31f8a6a6b598d8442951f1fe7071e3d5211))
+
 ## [1.1.1](https://github.com/timdixon82/Periodic-Table/compare/v1.1.0...v1.1.1) (2026-07-16)
 
 
