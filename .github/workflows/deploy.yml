@@ -180,7 +180,6 @@ jobs:
             rsync -a --prune-empty-dirs --safe-links \
                      --include='/index.html' \
                      --include='/styles/***' \
-                     --include='/scripts/***' \
                      --include='/data/***' \
                      --include='/assets/***' \
                      --include='/css/***' \
