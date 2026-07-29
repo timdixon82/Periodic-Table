@@ -10,31 +10,27 @@ This project has no build step. Runtime files live in the repository root alongs
 
 ## Solution
 
-Use the unbundled rsync pattern: an "Assemble site" step copies runtime files into a `_site` directory, excluding everything that is not for the browser. GitHub Actions then uploads and deploys `_site`.
+Use the rsync ALLOW-list pattern: an "Assemble the deploy artifact" step copies only explicitly listed runtime paths into a `_site` directory. Everything else is excluded by a trailing `--exclude='*'`. This is a fail-safe allow-list, not a deny-list: a file nobody thought to list is not published by default, so `node_modules`, `.github`, `.claude`, `docs`, and every config file stay out of the public site automatically, without needing a name on an exclude list. GitHub Actions then uploads and deploys `_site`.
 
-## The exclude list for this project
+Every include line (other than the `*/` descend-only pattern) carries a leading `/` to anchor it to the repository root. An include that contains a `/` but has no leading `/` is not anchored and matches at any depth, which can silently pull in nested paths such as `node_modules/some-package/scripts/*`.
+
+## The include list for this project
+
+The template default covers `index.html`, `styles/`, `scripts/`, `data/`, and `assets/`. This project does not use `styles/` or `scripts/` as folder names; it uses `css/` and `js/`. `/css/***` and `/js/***` are this project's two includes added beyond the template default, restoring the folders this project actually serves.
 
 ```
---exclude='_site'
---exclude='node_modules'
---exclude='.github'
---exclude='.claude'
---exclude='docs'
---exclude='package.json'
---exclude='package-lock.json'
---exclude='release-please-config.json'
---exclude='.release-please-manifest.json'
---exclude='eslint.config.js'
---exclude='CHANGELOG.md'
---exclude='README.md'
---exclude='VERSION'
---exclude='pa11y.json'
---exclude='.gitignore'
---exclude='.editorconfig'
---exclude='CLAUDE.md'
+--include='/index.html'
+--include='/styles/***'
+--include='/scripts/***'
+--include='/data/***'
+--include='/assets/***'
+--include='/css/***'
+--include='/js/***'
+--include='*/'
+--exclude='*'
 ```
 
-What remains after exclusion and is served to the browser: `index.html`, `assets/`, `css/`, `js/`.
+What is served to the browser: `index.html`, `assets/` (if present), `css/`, `js/`. The `styles/`, `scripts/`, and `data/` includes are inherited from the template default and currently match nothing in this project, since it has no folders by those names.
 
 ## Activation (one-time, per repository)
 

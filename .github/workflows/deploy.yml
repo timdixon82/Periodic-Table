@@ -183,6 +183,8 @@ jobs:
                      --include='/scripts/***' \
                      --include='/data/***' \
                      --include='/assets/***' \
+                     --include='/css/***' \
+                     --include='/js/***' \
                      --include='*/' \
                      --exclude='*' \
                      ./ _site/
