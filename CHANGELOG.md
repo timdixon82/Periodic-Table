@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.3](https://github.com/timdixon82/Periodic-Table/compare/v1.1.2...v1.1.3) (2026-07-29)
+
+
+### Bug Fixes
+
+* restore css/ and js/ includes in Pages deploy allow-list ([#53](https://github.com/timdixon82/Periodic-Table/issues/53)) ([ab734ab](https://github.com/timdixon82/Periodic-Table/commit/ab734ab87578b4de77412ebaaf14a742336eb163))
+* stop publishing scripts/ to Pages and add a favicon ([#55](https://github.com/timdixon82/Periodic-Table/issues/55)) ([95e3eb1](https://github.com/timdixon82/Periodic-Table/commit/95e3eb1e8aa52fba30ee370887b6235aa50a4450))
+
 ## [1.1.2](https://github.com/timdixon82/Periodic-Table/compare/v1.1.1...v1.1.2) (2026-07-23)
 
 
