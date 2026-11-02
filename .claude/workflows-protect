@@ -1,0 +1,3 @@
+
+# deploy.yml: the project publishes its css and js folders, which the template deploy list does not include.
+deploy.yml

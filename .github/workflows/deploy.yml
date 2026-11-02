@@ -62,7 +62,7 @@ jobs:
   # Use for projects with an npm build step that emits a folder (e.g. dist).
   # DELETE this job if your project is UNBUNDLED.
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       is_browser_extension: ${{ steps.archetype.outputs.is_browser_extension }}
       is_wordpress_theme: ${{ steps.archetype.outputs.is_wordpress_theme }}
@@ -203,7 +203,7 @@ jobs:
   deploy:
     needs: build
     if: needs.build.outputs.is_browser_extension != 'true' && needs.build.outputs.is_wordpress_theme != 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -219,7 +219,7 @@ jobs:
   # DELETE or COMMENT OUT this job if your project is BUNDLED.
   #
   # build-unbundled:
-  #   runs-on: ubuntu-latest
+  #   runs-on: ubuntu-24.04
   #   steps:
   #     - name: Check out the code
   #       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
@@ -264,7 +264,7 @@ jobs:
   #
   # deploy-unbundled:
   #   needs: build-unbundled
-  #   runs-on: ubuntu-latest
+  #   runs-on: ubuntu-24.04
   #   environment:
   #     name: github-pages
   #     url: ${{ steps.deployment.outputs.page_url }}
