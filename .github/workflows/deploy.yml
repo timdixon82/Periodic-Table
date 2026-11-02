@@ -1,7 +1,3 @@
-# Runner pin: jobs use ubuntu-24.04, not ubuntu-latest. ubuntu-latest now
-# resolves to Ubuntu 26.04, where the Playwright chromium install and the
-# Pa11y browser launch fail. Revisit once Playwright supports 26.04.
-
 # Deploy to GitHub Pages.
 # Runs on every push to main and on manual dispatch.
 #
@@ -66,12 +62,6 @@ jobs:
   # Use for projects with an npm build step that emits a folder (e.g. dist).
   # DELETE this job if your project is UNBUNDLED.
   build:
-    # GitHub Pages is not available for a private repository on a free
-    # account, so on a private repository there is nothing to deploy to and
-    # this job (and the deploy job that needs it) is reported as skipped,
-    # not failed. If a private repository is on a plan that includes Pages,
-    # remove this "if" line to turn the deploy on.
-    if: ${{ github.event.repository.private == false }}
     runs-on: ubuntu-24.04
     outputs:
       is_browser_extension: ${{ steps.archetype.outputs.is_browser_extension }}
@@ -190,9 +180,10 @@ jobs:
             rsync -a --prune-empty-dirs --safe-links \
                      --include='/index.html' \
                      --include='/styles/***' \
-                     --include='/scripts/***' \
                      --include='/data/***' \
                      --include='/assets/***' \
+                     --include='/css/***' \
+                     --include='/js/***' \
                      --include='*/' \
                      --exclude='*' \
                      ./ _site/
