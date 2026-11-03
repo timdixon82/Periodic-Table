@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.4](https://github.com/timdixon82/Periodic-Table/compare/v1.1.3...v1.1.4) (2026-11-03)
+
+
+### Bug Fixes
+
+* **deps:** clear open Dependabot alerts in dev dependencies ([#85](https://github.com/timdixon82/Periodic-Table/issues/85)) ([adbc6a0](https://github.com/timdixon82/Periodic-Table/commit/adbc6a0ff976c2cfc7bb2b604681c1530beb46dc))
+
 ## [1.1.3](https://github.com/timdixon82/Periodic-Table/compare/v1.1.2...v1.1.3) (2026-07-29)
 
 
