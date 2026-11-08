@@ -9,3 +9,7 @@ The project wiki for Periodic-Table was created from the team template, as part 
 ## [2026-05-21] ingest | Backfill reviews added
 
 As part of work 001-periodic-table-setup, four reviews were backfilled into the project wiki: business analysis and requirements (Tad, `requirements.md`), the architecture review (Jacob, four records in `decisions/`), the security governance review (Gerrie, `security-review.md`), and the code review and penetration test (Jed, `code-review.md`). Carol's baseline WCAG 2.2 AAA audit is held in the work folder. The audit found the page does not currently meet AAA; remediation is planned as a separate piece of work.
+
+## [2026-11-08] change | npm tool folders moved to ci-tools
+
+The lint-tools and accessibility-tools folders moved from `.github` to `ci-tools`, so Dependabot can open update pull requests for them (pilot for work folder 058 in the AgentTeam repository). The `dependabot.yml` entries, `lint.yml` and `accessibility.yml` were updated in the same pull request.
