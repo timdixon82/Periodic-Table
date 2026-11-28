@@ -15,12 +15,12 @@
     "@fontsource/nunito-sans": "^5.3.0",
     "@fontsource/rajdhani": "^5.3.0",
     "@fontsource/share-tech-mono": "^5.3.0",
-    "eslint": "^10.14.0",
+    "eslint": "^10.15.0",
     "globals": "^17.14.0",
-    "html-validate": "^11.18.0",
+    "html-validate": "^11.21.1",
     "stylelint": "^18.0.0",
     "stylelint-config-standard": "^41.0.0",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.1"
   },
   "overrides": {
     "js-yaml": "^4.2.0",
